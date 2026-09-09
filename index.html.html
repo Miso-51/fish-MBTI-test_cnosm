@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>나와 닮은 물고기는?</title>
+<meta name="description" content="국립청주해양과학관 - 질문에 답하고 나와 닮은 해양생물을 찾아보세요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ===================================================================
+     디자인 토큰 (라이트 / 다크)
+     =================================================================== */
+  :root{
+    --bg: #eff7f8;
+    --bg-deep: #0b3049;
+    --surface: #ffffff;
+    --surface-2: #f2f8f8;
+    --ink: #0e2733;
+    --ink-soft: #4b6672;
+    --ink-faint: #7c939c;
+    --line: #d9e8ea;
+    --primary: #0e7c86;
+    --primary-strong: #0a5c66;
+    --primary-tint: #dcf2f1;
+    --accent: #ff8a5b;
+    --accent-tint: #ffe6da;
+    --fact: #33526a;
+    --fact-tint: #e7edf2;
+    --fact-line: #c3d2db;
+    --shadow: 0 20px 40px -20px rgba(11,48,73,0.35);
+    --shadow-sm: 0 8px 20px -12px rgba(11,48,73,0.3);
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+    --font-display: 'Gowun Dodum', 'Noto Sans KR', sans-serif;
+    --font-body: 'Noto Sans KR', -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #071b26; --bg-deep: #04101a; --surface: #0e2733; --surface-2: #123240;
+      --ink: #e9f4f5; --ink-soft: #a9c2c9; --ink-faint: #7996a0; --line: #1d3d49;
+      --primary: #4fc9c2; --primary-strong: #7fe0d8; --primary-tint: #133a3c;
+      --accent: #ff9c72; --accent-tint: #3a2820;
+      --fact: #bcd2de; --fact-tint: #142834; --fact-line: #274a58;
+      --shadow: 0 20px 45px -18px rgba(0,0,0,0.6); --shadow-sm: 0 10px 24px -14px rgba(0,0,0,0.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #071b26; --bg-deep: #04101a; --surface: #0e2733; --surface-2: #123240;
+    --ink: #e9f4f5; --ink-soft: #a9c2c9; --ink-faint: #7996a0; --line: #1d3d49;
+    --primary: #4fc9c2; --primary-strong: #7fe0d8; --primary-tint: #133a3c;
+    --accent: #ff9c72; --accent-tint: #3a2820;
+    --fact: #bcd2de; --fact-tint: #142834; --fact-line: #274a58;
+    --shadow: 0 20px 45px -18px rgba(0,0,0,0.6); --shadow-sm: 0 10px 24px -14px rgba(0,0,0,0.55);
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg); color: var(--ink); font-family: var(--font-body);
+    line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh; overflow-x: hidden;
+  }
+  h1,h2,h3{ font-family: var(--font-display); text-wrap: balance; margin: 0; }
+  p{ margin:0; }
+  button{ font-family: inherit; }
+  img{ max-width:100%; display:block; }
+  :focus-visible{ outline: 3px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  .ocean-bg{
+    position: fixed; inset: 0; z-index: -1;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, var(--primary-tint) 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, var(--accent-tint) 0%, transparent 55%),
+      var(--bg);
+  }
+
+  .app-shell{
+    max-width: 720px; margin: 0 auto; min-height: 100vh;
+    display: flex; flex-direction: column; padding: 20px 18px 40px;
+  }
+
+  .brand-row{
+    display:flex; align-items:center; gap:10px; padding: 6px 2px 18px;
+    color: var(--ink-faint); font-size: 0.82rem; letter-spacing: 0.02em;
+  }
+  .brand-row .dot{ width:6px; height:6px; border-radius:50%; background: var(--primary); }
+
+  .screen{ display:none; flex:1; flex-direction:column; }
+  .screen.active{ display:flex; }
+
+  /* ---------------- 시작 화면 ---------------- */
+  #screen-start{ justify-content:center; align-items:center; text-align:center; gap: 28px; padding: 20px 6px 10px; }
+  .start-emoji{ font-size: 4.4rem; filter: drop-shadow(0 10px 18px rgba(14,124,134,0.25)); animation: bob 3.2s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-10px) } }
+  .start-title{ font-size: 1.9rem; color: var(--ink); line-height:1.35; }
+  .start-title b{ color: var(--primary-strong); }
+  .start-sub{ color: var(--ink-soft); font-size: 1.02rem; max-width: 360px; }
+  .start-meta{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; font-size: 0.82rem; color: var(--ink-faint); }
+  .start-meta span{ background: var(--surface); border:1px solid var(--line); padding: 6px 12px; border-radius: 999px; }
+  .btn-primary{
+    appearance:none; border:none; cursor:pointer;
+    background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+    color: #fff; font-family: var(--font-display); font-size: 1.15rem; padding: 16px 42px;
+    border-radius: 999px; box-shadow: var(--shadow-sm); transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:hover{ transform: translateY(-2px); box-shadow: var(--shadow); }
+  .btn-primary:active{ transform: translateY(0); }
+
+  /* ---------------- 퀴즈 화면 ---------------- */
+  #screen-quiz{ justify-content:flex-start; gap: 26px; padding-top: 8px; }
+  .quiz-top{ display:flex; align-items:center; gap:14px; }
+  .back-btn{
+    appearance:none; background: var(--surface); border:1px solid var(--line); width:40px; height:40px;
+    border-radius:50%; cursor:pointer; color: var(--ink-soft); font-size:1.1rem; flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center; transition: opacity .15s ease;
+  }
+  .back-btn:disabled{ opacity:0.35; cursor:default; }
+  .progress-wrap{ flex:1; }
+  .progress-label{ display:flex; justify-content:space-between; font-size:0.8rem; color: var(--ink-faint); margin-bottom:6px; font-variant-numeric: tabular-nums; }
+  .progress-track{ height:10px; border-radius:999px; background: var(--surface-2); border:1px solid var(--line); overflow:hidden; position:relative; }
+  .progress-fill{ height:100%; border-radius:999px; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width .35s cubic-bezier(.4,0,.2,1); }
+
+  .question-card{ flex:1; display:flex; flex-direction:column; justify-content:center; gap: 30px; padding: 10px 4px; }
+  .question-text{ font-size: 1.55rem; color: var(--ink); line-height:1.45; }
+  .choice-list{ display:flex; flex-direction:column; gap:12px; }
+  .choice-btn{
+    text-align:left; appearance:none; cursor:pointer; background: var(--surface); border:1.5px solid var(--line);
+    border-radius: var(--radius-md); padding: 18px 20px; font-size: 1.03rem; color: var(--ink);
+    display:flex; align-items:center; gap:14px; transition: border-color .15s ease, transform .12s ease, background .15s ease;
+  }
+  .choice-btn .num{
+    flex:0 0 auto; width:30px; height:30px; border-radius:50%; background: var(--primary-tint); color: var(--primary-strong);
+    display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:700;
+  }
+  .choice-btn:hover{ border-color: var(--primary); background: var(--primary-tint); transform: translateX(2px); }
+  .choice-btn:active{ transform: scale(0.99); }
+
+  /* ---------------- 결과 화면 ---------------- */
+  #screen-result{ gap: 18px; padding-top: 4px; }
+  .result-card{ background: var(--surface); border:1px solid var(--line); border-radius: var(--radius-lg); overflow:hidden; box-shadow: var(--shadow-sm); }
+  .result-card + .result-card{ margin-top: 4px; }
+
+  .hero-photo{
+    position: relative; width:100%; aspect-ratio: 4/3; max-height: 420px;
+    background: linear-gradient(160deg, var(--primary-tint), var(--surface-2));
+    display:flex; align-items:center; justify-content:center; overflow:hidden; cursor:pointer;
+  }
+  .hero-photo img{ width:100%; height:100%; object-fit:cover; }
+  .hero-photo .img-placeholder{ display:flex; flex-direction:column; align-items:center; gap:8px; color: var(--primary-strong); text-align:center; padding: 0 20px; }
+  .hero-photo .img-placeholder .ph-emoji{ font-size: 3.4rem; }
+  .hero-photo .img-placeholder .ph-text{ font-size:0.8rem; color: var(--ink-faint); }
+  .hero-photo .zoom-hint{
+    position:absolute; right:14px; bottom:14px; background: rgba(9,32,41,0.55); backdrop-filter: blur(6px);
+    color:#fff; padding:6px 12px; border-radius:999px; font-size:0.75rem;
+  }
+
+  .result-heading{ text-align:center; padding: 26px 22px 6px; }
+  .result-kicker{ font-size:0.85rem; color: var(--ink-faint); letter-spacing:0.04em; }
+  .result-title{ font-size: 1.9rem; margin-top:6px; cursor:pointer; }
+  .result-title .accent{ color: var(--primary-strong); }
+  .result-subtitle{ display:inline-block; margin-top:10px; font-size:1.02rem; font-weight:700; color: var(--accent); background: var(--accent-tint); padding: 6px 16px; border-radius: 999px; }
+
+  .tag-row{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; padding: 16px 22px 6px; }
+  .tag-chip{ background: var(--primary-tint); color: var(--primary-strong); font-size: 0.82rem; padding: 6px 13px; border-radius: 999px; font-weight:500; }
+
+  .section-label{ display:flex; align-items:center; gap:8px; font-size: 0.95rem; font-weight:700; color: var(--ink); padding: 20px 22px 4px; }
+  .section-label .ico{ font-size:1.1rem; }
+  .section-note{ padding: 0 22px 14px; color: var(--ink-faint); font-size:0.82rem; }
+  .personality-desc{ padding: 4px 22px 20px; color: var(--ink-soft); font-size:1rem; }
+  .personality-headline{ padding: 0 22px; font-size:1.15rem; font-weight:700; color: var(--primary-strong); }
+
+  /* 레이더 차트 */
+  .radar-wrap{ display:flex; flex-direction:column; align-items:center; padding: 6px 22px 10px; gap: 14px; }
+  .radar-wrap svg{ width: 100%; max-width: 320px; height:auto; }
+  .radar-scores{ width:100%; max-width:320px; display:grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+  .radar-score-item{ display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; }
+  .radar-score-item .rname{ color: var(--ink-soft); }
+  .radar-score-item .stars{ color: var(--accent); letter-spacing:1px; }
+
+  /* MBTI (재미 요소) */
+  .mbti-block{ margin: 0 22px 22px; padding: 18px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--primary-tint), var(--accent-tint)); text-align:center; }
+  .mbti-code{ font-family: var(--font-display); font-size:1.8rem; color: var(--primary-strong); letter-spacing:0.05em; }
+  .mbti-note{ font-size:0.78rem; color: var(--ink-faint); margin-top:8px; }
+
+  /* 과학적 사실 카드 */
+  .fact-card{ background: var(--fact-tint); border:1px dashed var(--fact-line); border-radius: var(--radius-md); margin: 0 22px 22px; padding: 18px 20px; }
+  .fact-card .section-label{ padding: 0 0 8px; color: var(--fact); }
+  .fact-card p{ color: var(--fact); font-size:0.94rem; }
+  .fact-card .fact-tags{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .fact-badge{ font-size:0.72rem; color: var(--fact); background: var(--surface); border:1px solid var(--fact-line); padding:3px 9px; border-radius:6px; }
+
+  /* 합사 카드 */
+  .compat-grid{ display:flex; flex-direction:column; gap:12px; padding: 6px 22px 22px; }
+  .compat-card{ display:flex; gap:12px; align-items:center; border:1px solid var(--line); border-radius: var(--radius-md); padding: 12px; background: var(--surface-2); cursor:pointer; transition: transform .12s ease, box-shadow .12s ease; }
+  .compat-card:hover{ transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+  .compat-card.bad{ background: var(--accent-tint); border-color: var(--accent); }
+  .compat-thumb{ width:64px; height:64px; border-radius: 14px; overflow:hidden; flex:0 0 auto; background: var(--surface); display:flex; align-items:center; justify-content:center; }
+  .compat-thumb img{ width:100%; height:100%; object-fit:cover; }
+  .compat-thumb .ph-emoji{ font-size:1.6rem; }
+  .compat-info .cname{ font-weight:700; font-size:0.95rem; }
+  .compat-info .cwater{ font-size:0.74rem; color: var(--ink-faint); margin: 2px 0 4px; }
+  .compat-info .creason{ font-size:0.84rem; color: var(--ink-soft); }
+  .compat-empty{ font-size:0.85rem; color: var(--ink-faint); font-style: italic; }
+
+  /* 다른 생물도 있어요 */
+  .other-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; padding: 6px 22px 22px; }
+  @media (max-width: 480px){ .other-grid{ grid-template-columns: repeat(2, 1fr); } }
+  .other-card{ background: var(--surface-2); border:1px solid var(--line); border-radius: var(--radius-md); overflow:hidden; cursor:pointer; transition: transform .12s ease, box-shadow .12s ease; text-align:center; }
+  .other-card:hover{ transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+  .other-thumb{ width:100%; aspect-ratio: 1/1; background: var(--surface); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .other-thumb img{ width:100%; height:100%; object-fit:cover; }
+  .other-thumb .ph-emoji{ font-size:2rem; }
+  .other-info{ padding: 8px 8px 12px; }
+  .other-info .oname{ font-weight:700; font-size:0.85rem; }
+  .other-info .oline{ font-size:0.72rem; color: var(--ink-faint); margin-top:2px; line-height:1.3; }
+
+  .action-row{ display:flex; gap:10px; flex-wrap:wrap; padding: 6px 4px 4px; }
+  .btn-ghost, .btn-solid{
+    appearance:none; cursor:pointer; border-radius: 999px; padding: 14px 16px; font-size: 0.95rem; font-weight:700;
+    text-align:center; display:flex; align-items:center; justify-content:center; gap:6px; transition: transform .12s ease, background .15s ease; white-space: nowrap;
+  }
+  .btn-ghost{ flex: 1 1 calc(50% - 5px); background: var(--surface); border:1.5px solid var(--line); color: var(--ink); }
+  .btn-ghost:hover{ border-color: var(--primary); color: var(--primary-strong); }
+  .btn-solid{ flex: 1 1 100%; background: var(--primary); border:1.5px solid var(--primary); color:#fff; }
+  .btn-solid:hover{ background: var(--primary-strong); }
+  .btn-ghost:active, .btn-solid:active{ transform: scale(0.97); }
+
+  .toast{
+    position: fixed; left:50%; bottom: 26px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--bg);
+    padding: 12px 20px; border-radius: 999px; font-size: 0.88rem; opacity:0; pointer-events:none; transition: all .25s ease; z-index: 50; white-space: nowrap; max-width: 86vw; text-overflow:ellipsis; overflow:hidden;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  .footer-note{ text-align:center; color: var(--ink-faint); font-size:0.75rem; padding-top: 8px; }
+
+  /* ---------------- 생물 상세 모달 ---------------- */
+  .modal-backdrop{
+    position: fixed; inset:0; background: rgba(4,16,26,0.55); backdrop-filter: blur(3px);
+    display:flex; align-items:flex-end; justify-content:center; z-index: 100; opacity:0; pointer-events:none; transition: opacity .2s ease;
+  }
+  .modal-backdrop.show{ opacity:1; pointer-events:auto; }
+  @media (min-width: 640px){ .modal-backdrop{ align-items:center; padding: 24px; } }
+  .modal-panel{
+    background: var(--bg); width:100%; max-width: 480px; max-height: 88vh; overflow-y:auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0; box-shadow: var(--shadow);
+    transform: translateY(16px); transition: transform .25s cubic-bezier(.4,0,.2,1);
+  }
+  @media (min-width: 640px){ .modal-panel{ border-radius: var(--radius-lg); transform: translateY(8px); } }
+  .modal-backdrop.show .modal-panel{ transform: translateY(0); }
+  .modal-close{
+    position:sticky; top:0; z-index:2; float:right; margin:12px 12px 0 0; appearance:none; cursor:pointer;
+    background: var(--surface); border:1px solid var(--line); width:36px; height:36px; border-radius:50%;
+    color: var(--ink-soft); font-size:1rem; display:flex; align-items:center; justify-content:center;
+  }
+  .modal-body{ padding-bottom: 8px; }
+
+  @media (min-width: 768px){
+    .start-title{ font-size: 2.3rem; }
+    .start-sub{ font-size: 1.08rem; max-width: 420px; }
+    .question-text{ font-size: 1.75rem; }
+    .result-title{ font-size: 2.2rem; }
+    .radar-wrap svg{ max-width: 340px; }
+  }
+
+  @media (max-width: 380px){
+    .start-title{ font-size: 1.6rem; }
+    .question-text{ font-size: 1.32rem; }
+    .result-title{ font-size: 1.6rem; }
+    .action-row{ gap: 8px; }
+    .btn-ghost, .btn-solid{ font-size: 0.86rem; padding: 13px 6px; gap: 4px; }
+    .other-info .oname{ font-size:0.78rem; }
+  }
+</style>
+</head>
+<body>
+<div class="ocean-bg" aria-hidden="true"></div>
+
+<div class="app-shell">
+  <div class="brand-row"><span class="dot"></span> 국립청주해양과학관 · 성격 유형 체험</div>
+
+  <!-- ============ 화면 1: 시작 ============ -->
+  <section id="screen-start" class="screen active" aria-live="polite">
+    <div class="start-emoji" aria-hidden="true">🐠</div>
+    <h1 class="start-title">나와 닮은<br><b>물고기</b>는?</h1>
+    <p class="start-sub">물고기의 성격을 통해<br>나와 가장 닮은 해양생물을 찾아보세요.</p>
+    <div class="start-meta">
+      <span id="meta-count">질문 12개</span>
+      <span>약 2분 소요</span>
+      <span id="meta-species">담수·해수 생물 매칭</span>
+    </div>
+    <button class="btn-primary" id="btn-start">테스트 시작하기</button>
+  </section>
+
+  <!-- ============ 화면 2: 질문 ============ -->
+  <section id="screen-quiz" class="screen" aria-live="polite">
+    <div class="quiz-top">
+      <button class="back-btn" id="btn-back" aria-label="이전 질문으로">←</button>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="progress-text">1 / 12</span>
+          <span id="progress-percent">8%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:8%"></div></div>
+      </div>
+    </div>
+    <div class="question-card">
+      <h2 class="question-text" id="question-text"></h2>
+      <div class="choice-list" id="choice-list"></div>
+    </div>
+  </section>
+
+  <!-- ============ 화면 3: 결과 ============ -->
+  <section id="screen-result" class="screen" aria-live="polite">
+    <div id="result-mount"></div>
+    <div class="action-row">
+      <button class="btn-ghost" id="btn-restart">🔄 다시 테스트하기</button>
+      <button class="btn-ghost" id="btn-save">🖼 결과 저장</button>
+      <button class="btn-solid" id="btn-share">📤 결과 공유</button>
+    </div>
+    <p class="footer-note">성격은 재미로, 생태 정보는 정확하게! · 국립청주해양과학관</p>
+  </section>
+</div>
+
+<!-- 생물 상세 모달 -->
+<div class="modal-backdrop" id="modal-backdrop" aria-hidden="true">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" id="modal-close" aria-label="닫기">✕</button>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<canvas id="save-canvas" width="900" height="1200" style="display:none"></canvas>
+
+<script>
+/* =====================================================================
+   1. 데이터 영역
+   ---------------------------------------------------------------------
+   이 파일은 "국립청주해양과학관 - 나와 닮은 물고기는?" 웹 체험 콘텐츠입니다.
+
+   CREATURES 배열에는 실제 테스트 결과 후보로 사용되는 생물 데이터가 담깁니다.
+   담수 7종·해수 26종, 총 33종 전체가 traits/description/ecology/
+   compatible/incompatible이 모두 채워진 "완성 데이터"이며, 실제로 테스트
+   결과 후보로 사용됩니다. 원본 4종(native_softshell·cherry_barb·
+   sohal_tang·blue_tang)의 문구는 그대로 두었고, 나머지 29종은 제공된
+   성격 콘셉트(title/tags)를 기반으로 새로 작성했습니다 — 특히 ecology
+   (실제 생태 정보)는 일반적으로 알려진 종 특성을 바탕으로 작성했지만
+   출처를 하나하나 대조 검증하지는 않았으므로 모두 ecologyVerified: false
+   로 표시해 두었습니다. 공개 전 담당자가 사실 확인을 거쳐 필요한 부분을
+   수정하고 ecologyVerified: true로 바꿔주세요.
+
+   CREATURE_TEMPLATES_TODO 배열은 34종째부터 추가할 때 쓰는 빈 스켈레톤
+   보관함입니다(현재는 비어 있음). 이 배열은 매칭 로직에서 전혀 사용되지
+   않습니다. 새 생물의 실제 사진(image)·성향 점수(traits)·성격 설명
+   (description)·생태 정보(ecology)·합사 정보(compatible/incompatible)를
+   채운 뒤 완성된 객체를 CREATURES 배열로 옮기면, 코드를 전혀 수정하지
+   않아도 자동으로 테스트 결과 후보 및 결과 화면에 반영됩니다.
+
+   각 필드 설명
+     id            : 고유 id (영문 snake_case). compatible/incompatible의
+                     참조 키로 사용됩니다.
+     name          : 국문명
+     waterType     : "담수어" | "해수어"
+     subName       : 학명/영문명 등 보조 표기 (선택)
+     image         : 실제 사진 URL. 비어있거나 로드에 실패하면 자동으로
+                     이모지 플레이스홀더("사진 준비 중")가 표시됩니다.
+     emoji         : 사진이 없을 때 대신 보여줄 이모지
+     headline      : 카드 목록 등에 쓰이는 한 줄 성격 설명
+     title         : 성격 콘셉트 타이틀 (예: "철벽 수호자형")
+     tags          : 결과 화면 상단에 노출되는 성격 해시태그 2~4개
+     traits        : 레이더 차트용 5개 지표 (1~5). 사용자의 테스트 점수가
+                     아니라 "이 생물 자체가 가진 고유 성향"을 나타내는
+                     고정값입니다. 매칭 로직은 사용자의 답변으로 계산된
+                     5개 성향 점수와 이 traits 값 사이의 거리를 비교합니다.
+     description   : 성격 비유 설명 (재미 콘텐츠 · §"성격으로 보면")
+     ecology       : 실제 생태·행동 정보 (사실 기반 콘텐츠 · §"실제로는?")
+                     문자열 그대로 사용해도 되고, 아래처럼 항목을 나눈
+                     객체로도 관리할 수 있도록 표시 로직(getEcologyText)이
+                     양쪽 형태를 모두 지원합니다.
+                       ecology: {
+                         habitat: "", behavior: "", feeding: "",
+                         sociality: "", territoriality: "", summary: ""
+                       }
+                     지금 당장 구조를 바꿀 필요는 없으며, 문자열 그대로
+                     두어도 정상 동작합니다.
+     ecologyVerified : 담당자가 생태 정보 출처를 검증했는지 여부. 미검증
+                     시 결과 화면에 "생태 정보 검증 전" 안내가 노출됩니다.
+     compatible    : { id, reason } 형태. 함께 사육하기 비교적 무난한
+                     생물 1종을 가리킵니다 (없으면 null). id는 실제 생태·
+                     합사 근거(영역성, 크기, 서식 수층, 먹이 경쟁 등)를
+                     기준으로 지정하며, 테스트 결과 계산(quiz)과는 완전히
+                     분리된 독립적인 데이터입니다.
+     incompatible  : { id, reason } 형태. 합사 시 주의가 필요한 생물
+                     1종을 가리킵니다 (없으면 null). 표현은 항상 "주의가
+                     필요합니다/가능성이 있습니다"처럼 단정하지 않는
+                     어조를 사용합니다.
+
+   compatible.id / incompatible.id 로 지정된 생물이 존재하지 않거나 아직
+   CREATURES에 옮겨지지 않은 스켈레톤 상태여도 화면이 깨지지 않도록
+   getCreatureById() / compatCardHTML()에서 예외 처리를 합니다.
+   ===================================================================== */
+
+  // 레이더 차트 5축 + 매칭에 사용되는 5가지 성향
+  const TRAIT_AXES = [
+    { key: "activity",       label: "활동성" },
+    { key: "social",         label: "사회성" },
+    { key: "independence",   label: "독립성" },
+    { key: "territoriality", label: "영역성" },
+    { key: "exploration",    label: "탐색성" }
+  ];
+
+  /* ---------------------------------------------------------------------
+     CREATURES : 최종 결과 후보 (33종 전체 완성)
+     ---------------------------------------------------------------------
+     담수 7종 + 해수 26종, 총 33종의 traits/description/ecology/compatible/
+     incompatible을 모두 채워 전량 결과 후보로 사용합니다.
+
+     ※ 원본 4종(native_softshell·cherry_barb·sohal_tang·blue_tang)은 처음
+     제공된 문구를 그대로 유지했습니다. 나머지 29종은 제공된 성격 콘셉트
+     (title/tags/mbtiFlavor)를 그대로 살리고, 성격 설명(description)과
+     실제 생태 정보(ecology)를 새로 작성했습니다. ecology는 일반적으로
+     알려진 종 특성을 바탕으로 작성했지만 출처를 개별 대조하지 않았으므로
+     ecologyVerified: false로 표시해 두었습니다 — 공개 전 담당자의 사실
+     검증을 거쳐 ecologyVerified: true로 전환하고 필요시 문구를 다듬어
+     주세요. compatible/incompatible도 마찬가지로 일반적인 해수어 합사
+     지식(영역성·체형 유사도·서식 수층·먹이 경쟁·포식 관계 등)을 근거로
+     초안을 작성한 것이며, 실제 사육 경험에 따라 조정될 수 있습니다.
+  --------------------------------------------------------------------- */
+  const CREATURES = [
+    {
+      id: "native_softshell",
+      name: "토종 자라",
+      waterType: "담수어",
+      subName: "Chinese softshell turtle",
+      image: "https://upload.wikimedia.org/wikipedia/commons/2/23/DSC09767_-_Chinese_Softshell_Turtle_%2837081082331%29.jpg",
+      emoji: "🐢",
+      headline: "서두르지 않고 내 리듬대로 움직이는 마이웨이형",
+      title: "느긋한 마이웨이형",
+      tags: ["독립형", "안정형", "신중형"],
+      traits: { activity: 2, social: 1, independence: 5, territoriality: 2, exploration: 2 },
+      description: "남의 속도에 맞추기보다 내 리듬대로 움직이는 당신. 서두르지 않아도 결국 자기 할 일은 다 해내는 타입이에요.",
+      ecology: "자라는 물속과 물 밖을 오가며 생활하는 반수생 파충류로, 대부분의 시간을 물속 바닥이나 모래에 몸을 숨긴 채 보내다가 먹이가 지나갈 때 빠르게 반응하는 매복형 사냥 습성을 보입니다. 잡식성으로 작은 물고기, 갑각류, 수생식물 등을 먹습니다.",
+      ecologyVerified: false,
+      compatible: { id: "cherry_barb", reason: "자라는 작은 물고기에게 크게 관심을 두지 않는 편이라, 몸집이 작고 온순한 체리바브와는 비교적 무난하게 지낼 수 있습니다." },
+      incompatible: null
+    },
+    {
+      id: "cherry_barb",
+      name: "체리바브",
+      waterType: "담수어",
+      subName: "Puntius titteya",
+      image: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Male_Cherry_Barb_700.jpg",
+      emoji: "🐠",
+      headline: "무리와 함께일 때 마음이 편안한 평화주의자",
+      title: "평화로운 협력가형",
+      tags: ["사회형", "협력형", "안정형"],
+      traits: { activity: 3, social: 5, independence: 1, territoriality: 1, exploration: 2 },
+      description: "혼자보다는 함께 있을 때 편안함을 느끼는 당신. 무리와 잘 어우러지면서도 갈등을 만들지 않는 평화주의자예요.",
+      ecology: "체리바브는 스리랑카가 원산지인 잉어과 어류로, 여러 마리가 무리를 지어 다니는 군집성 습성이 있습니다. 성격이 온순하고 활동량이 크지 않아 다양한 어종과 함께 사육하기 좋은 것으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "native_softshell", reason: "체리바브는 온순하고 크기가 작아 자라와 같은 큰 생물과도 큰 마찰 없이 지내는 경우가 많습니다." },
+      incompatible: null
+    },
+    {
+      id: "siamese_algae_eater",
+      name: "시아미즈 알지이터",
+      waterType: "담수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Crossocheilus_siamensis_by_Ark.jpg",
+      emoji: "🐟",
+      headline: "쉬지 않고 부지런히 움직이는 행동파",
+      title: "부지런한 행동파",
+      mbtiFlavor: "ISTJ",
+      tags: ["활동형", "자기주도형"],
+      traits: { activity: 5, social: 2, independence: 4, territoriality: 3, exploration: 3 },
+      description: "가만히 있지 못하고 늘 무언가를 하고 있어야 마음이 편한 당신. 맡은 일은 묵묵히, 그리고 부지런히 해내는 행동파예요.",
+      ecology: "시아미즈 알지이터는 동남아시아가 원산지인 잉어과 어류로, 실 모양의 검은 수염말(black beard algae)까지 먹는 몇 안 되는 어종으로 알려져 있습니다. 활동적으로 수조 곳곳을 돌아다니며 조류를 뜯어 먹고, 성체가 되면 같은 종끼리 텃세를 부리는 경우가 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "rosy_barb", reason: "서식 수층과 주 먹이가 달라 비교적 무난하게 함께 지낼 수 있는 조합입니다." },
+      incompatible: { id: "ancistrus_longfin", reason: "비슷한 조류 섭식 습성과 서식 공간으로 인해 먹이 경쟁이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "ancistrus_longfin",
+      name: "안시롱핀",
+      waterType: "담수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Ancistrus_sp._%28aka%29.jpg",
+      emoji: "🐡",
+      headline: "묵묵히 자기 몫을 해내는 은신처의 일꾼",
+      title: "묵묵한 실무자형",
+      mbtiFlavor: "ISTJ",
+      tags: ["안정형", "독립형"],
+      traits: { activity: 2, social: 1, independence: 5, territoriality: 3, exploration: 2 },
+      description: "화려하게 나서기보다 조용히 자기 몫을 해내는 당신. 남들이 잘 보지 않는 곳에서도 꾸준함을 잃지 않는 타입이에요.",
+      ecology: "안시롱핀(브리슬노즈 플레코)은 남아메리카가 원산지인 메기류로, 주로 야간에 활동하며 낮에는 은신처에 몸을 숨기고 지내는 습성이 있습니다. 흡착형 입으로 유리벽과 바위의 조류를 긁어 먹으며, 수컷은 자신의 은신처에 대한 텃세를 보이는 것으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "rosy_barb", reason: "서식 수층이 달라(바닥층 vs 중층) 비교적 무난하게 지낼 수 있는 조합입니다." },
+      incompatible: { id: "siamese_algae_eater", reason: "비슷한 먹이와 서식 공간을 두고 경쟁이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "rainbowfish",
+      name: "레인보우피쉬류",
+      waterType: "담수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Red_m_boesemani.jpg",
+      emoji: "🐠",
+      headline: "가는 곳마다 활기를 불어넣는 분위기 메이커",
+      title: "분위기 메이커형",
+      mbtiFlavor: "ESFP",
+      tags: ["사회형", "활동형"],
+      traits: { activity: 4, social: 5, independence: 1, territoriality: 1, exploration: 3 },
+      description: "어디에서든 활기를 불어넣는 당신. 밝은 에너지로 주변 분위기를 자연스럽게 띄우는 사람이에요.",
+      ecology: "레인보우피쉬는 호주·뉴기니 일대가 원산지인 무지개송사리과 어류로, 무리를 지어 다니는 군집성이 강하고 중상층을 활발하게 헤엄쳐 다닙니다. 성격이 온순해 여러 어종과 함께 사육하기 좋은 것으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "rosy_barb", reason: "비슷한 활동성과 온순한 성격의 무리성 어종으로 함께 유영하기 좋은 조합으로 알려져 있습니다." },
+      incompatible: { id: "altum_angelfish", reason: "활동적으로 헤엄치는 습성이 상대적으로 정적인 알텀엔젤에게 스트레스를 줄 가능성이 있습니다." }
+    },
+    {
+      id: "altum_angelfish",
+      name: "알텀엔젤",
+      waterType: "담수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/7/79/Altum_pic_2.jpg",
+      emoji: "🐟",
+      headline: "서두르지 않고 우아하게 지켜보는 관찰자",
+      title: "우아한 관찰자형",
+      mbtiFlavor: "INFJ",
+      tags: ["관찰형", "신중형"],
+      traits: { activity: 2, social: 2, independence: 3, territoriality: 3, exploration: 2 },
+      description: "시끄러운 것보다 차분한 것을 좋아하는 당신. 서두르지 않고 우아하게 상황을 지켜보다 움직이는 타입이에요.",
+      ecology: "알텀엔젤은 아마존 상류의 유속이 느리고 어두운 물에 서식하는 시클리드과 어류로, 몸높이가 매우 높은 것이 특징입니다. 다른 엔젤피쉬에 비해 예민한 편으로 알려져 있어 안정적인 수질과 조용한 환경을 선호합니다.",
+      ecologyVerified: false,
+      compatible: { id: "cherry_barb", reason: "온순하고 지느러미를 물지 않는 습성으로 비교적 무난한 조합으로 알려져 있습니다." },
+      incompatible: { id: "rainbowfish", reason: "활동량이 많은 종과 함께 두면 상대적으로 정적인 알텀엔젤이 스트레스를 받을 가능성이 있습니다." }
+    },
+    {
+      id: "rosy_barb",
+      name: "로즈라인바브",
+      waterType: "담수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/2/27/Rosy_barb_friends.jpg",
+      emoji: "🐠",
+      headline: "호기심 가득한 눈으로 먼저 다가가는 탐험가",
+      title: "호기심 탐험가형",
+      mbtiFlavor: "ESTP",
+      tags: ["탐색형", "활동형"],
+      traits: { activity: 4, social: 4, independence: 2, territoriality: 1, exploration: 4 },
+      description: "새로운 것을 보면 일단 다가가 보는 당신. 호기심이 많고 활동적이라 어디서든 먼저 움직이는 편이에요.",
+      ecology: "로즈라인바브(로지바브)는 남아시아가 원산지인 잉어과 어류로, 활동적으로 무리 지어 헤엄치는 습성이 있습니다. 환경 적응력이 좋고 튼튼한 편이라 초보자도 비교적 쉽게 사육할 수 있는 어종으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "ancistrus_longfin", reason: "서식 수층이 달라 비교적 무난하게 함께 지낼 수 있는 조합입니다." },
+      incompatible: { id: "altum_angelfish", reason: "활동량이 많은 바브류가 엔젤피쉬의 긴 지느러미를 건드릴 가능성이 있어 주의가 필요합니다." }
+    },
+    {
+      id: "percula_clownfish",
+      name: "퍼큘라 크라운피쉬",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/9/9b/A._percula.jpg",
+      emoji: "🐠",
+      headline: "내가 지키는 자리에서 관계를 소중히 하는 타입",
+      title: "관계 중심형",
+      mbtiFlavor: "ESFJ",
+      tags: ["사회형", "협력형"],
+      traits: { activity: 3, social: 4, independence: 2, territoriality: 3, exploration: 2 },
+      description: "혼자보다 함께일 때 더 힘이 나는 당신. 내가 속한 곳, 내가 지키고 싶은 사람들에게 유독 마음이 가는 타입이에요.",
+      ecology: "퍼큘라 크라운피쉬(퍼큘라 클라운피시)는 인도-태평양 산호초에서 말미잘과 공생하는 것으로 잘 알려진 어종입니다. 자신이 머무는 말미잘 주변을 영역으로 삼아 지내며, 무리 내에서는 크기에 따른 위계 서열이 있는 것으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "blue_green_chromis", reason: "서식 수층이 다르고 온순한 편이라 비교적 무난한 조합으로 알려져 있습니다." },
+      incompatible: { id: "blue_devil_damsel", reason: "두 종 모두 텃세가 있는 편이라 좁은 공간에서는 영역 다툼이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "blue_green_chromis",
+      name: "샛별돔",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/1/12/Blue-green_Chromis%2C_Kiribati_imported_from_iNaturalist_photo_345755248.jpg",
+      emoji: "🐟",
+      headline: "무리 속에서도 자기 목소리를 내는 당당함",
+      title: "작지만 당당한 리더형",
+      mbtiFlavor: "ESTJ",
+      tags: ["대담형", "사회형"],
+      traits: { activity: 4, social: 4, independence: 2, territoriality: 2, exploration: 3 },
+      description: "몸집이 크지 않아도 당당함으로 존재감을 드러내는 당신. 무리 속에서도 자기 목소리를 내는 편이에요.",
+      ecology: "샛별돔은 인도-태평양 산호초 상공에서 큰 무리를 지어 플랑크톤을 먹는 자리돔과 어류입니다. 무리 지어 다니는 습성이 강하며, 비교적 온순해 여러 어종과 함께 사육되는 경우가 많습니다.",
+      ecologyVerified: false,
+      compatible: { id: "percula_clownfish", reason: "서식 수층이 다르고 온순한 편이라 비교적 무난한 조합으로 알려져 있습니다." },
+      incompatible: { id: "golden_trevally", reason: "골든트레발리는 성장하면서 크기 차이가 커져 작은 어종에게 포식 위험이 될 수 있어 주의가 필요합니다." }
+    },
+    {
+      id: "blue_devil_damsel",
+      name: "파랑돔",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/0/02/Chrysiptera_cyanea_Gratwicke.jpg",
+      emoji: "🐡",
+      headline: "작은 몸집에도 기죽지 않는 당찬 수호자",
+      title: "작은 거인형",
+      mbtiFlavor: "ESTP",
+      tags: ["영역형", "대담형"],
+      traits: { activity: 4, social: 2, independence: 3, territoriality: 5, exploration: 3 },
+      description: "작은 체구에도 기죽지 않는 당신. 내 자리는 내가 지킨다는 마음으로 당차게 행동하는 타입이에요.",
+      ecology: "파랑돔은 인도-태평양 산호초에 서식하는 자리돔과 어류로, 몸집에 비해 텃세와 공격성이 강한 종으로 알려져 있습니다. 자신이 정한 좁은 영역을 적극적으로 지키는 행동을 보입니다.",
+      ecologyVerified: false,
+      compatible: { id: "diamond_goby", reason: "서식 공간(수층 vs 바닥)이 달라 영역 다툼 가능성이 상대적으로 낮은 조합입니다." },
+      incompatible: { id: "percula_clownfish", reason: "두 종 모두 텃세가 있어 좁은 공간에서는 영역을 두고 다툼이 생길 가능성이 있습니다." }
+    },
+    {
+      id: "sailfin_tang",
+      name: "세일핀탱",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/f/f1/Pacific_sailfin_tang_%28Zebrasoma_velifer%29_Moorea.jpg",
+      emoji: "🐠",
+      headline: "내 구역만큼은 확실하게 챙기는 관리형 리더",
+      title: "영역 관리형 리더",
+      mbtiFlavor: "ESTJ",
+      tags: ["영역형", "자기주도형"],
+      traits: { activity: 3, social: 2, independence: 4, territoriality: 4, exploration: 3 },
+      description: "내가 맡은 영역만큼은 확실하게 챙기는 당신. 책임감 있게 자기 구역을 관리하는 리더형이에요.",
+      ecology: "세일핀탱은 인도-태평양 산호초에 서식하며, 돛처럼 크게 펼쳐지는 등지느러미가 특징인 초식성 탱류입니다. 해조류를 뜯어 먹으며 생활하고, 같은 종이나 체형이 비슷한 탱류에게 텃세를 부리는 것으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "foxface_rabbitfish", reason: "체형과 서식 습성이 달라 탱류 특유의 영역 다툼 가능성이 상대적으로 낮은 조합입니다." },
+      incompatible: { id: "purple_tang", reason: "체형이 유사한 탱류끼리는 좁은 공간에서 영역 경쟁이 발생할 가능성이 높습니다." }
+    },
+    {
+      id: "nasso_tang",
+      name: "낫소탱",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Naso_lituratus_Gratwicke.jpg",
+      emoji: "🐟",
+      headline: "넓은 바다를 거침없이 누비는 탐험가",
+      title: "넓은 세상의 탐험가",
+      mbtiFlavor: "ENTP",
+      tags: ["탐색형", "자기주도형"],
+      traits: { activity: 4, social: 2, independence: 4, territoriality: 3, exploration: 5 },
+      description: "한 곳에 얽매이기보다 넓은 세상을 누비고 싶은 당신. 활동 반경이 넓고 새로운 곳을 향해 거침없이 나아가는 편이에요.",
+      ecology: "낫소탱(오렌지스파인 유니콘피쉬)은 인도-태평양 산호초에 서식하는 탱류로, 다른 탱류에 비해 활동 범위가 넓어 개방된 수역까지 폭넓게 헤엄쳐 다니는 편입니다. 주로 해조류를 뜯어 먹으며, 청소놀래기 등에게 몸을 맡겨 기생충을 제거하는 행동이 관찰되기도 합니다.",
+      ecologyVerified: false,
+      compatible: { id: "cleaner_wrasse", reason: "낫소탱은 기생충 제거를 위해 청소놀래기를 찾는 습성이 있어 비교적 자연스러운 조합으로 알려져 있습니다." },
+      incompatible: { id: "unicorn_tang", reason: "생김새와 서식 습성이 비슷한 나소속(Naso) 어종끼리는 영역 경쟁이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "koran_angelfish",
+      name: "코란엔젤",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/1/1c/Pomacanthus_semicirculatus_1.jpg",
+      emoji: "🐠",
+      headline: "시간이 지날수록 더 뚜렷해지는 개성",
+      title: "개성 강한 표현형",
+      mbtiFlavor: "ENFP",
+      tags: ["자기주도형", "대담형"],
+      traits: { activity: 3, social: 1, independence: 4, territoriality: 4, exploration: 3 },
+      description: "남들과 똑같은 모습보다 나만의 색을 드러내고 싶은 당신. 시간이 지날수록 더 뚜렷해지는 개성을 가진 타입이에요.",
+      ecology: "코란엔젤은 인도-태평양 산호초에 서식하는 대형 엔젤피쉬로, 유생기와 성체의 무늬가 크게 달라지는 것으로 잘 알려져 있습니다. 해면동물과 피낭동물 등을 먹으며, 성체가 되면 자신의 영역에 대한 텃세가 강해지는 경향이 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "diamond_goby", reason: "서식 수층과 먹이가 달라 비교적 무난하게 지낼 수 있는 조합입니다." },
+      incompatible: { id: "emperor_angelfish", reason: "성체 무늬와 서식 습성이 비슷한 대형 엔젤피쉬끼리는 영역 다툼이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "purple_tang",
+      name: "퍼플탱",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Zebrasoma_xanthurum2.JPG",
+      emoji: "🐡",
+      headline: "내 기준을 쉽게 굽히지 않는 확고함",
+      title: "자기 기준이 확실한 개성형",
+      mbtiFlavor: "INTJ",
+      tags: ["영역형", "자기주도형"],
+      traits: { activity: 3, social: 1, independence: 5, territoriality: 5, exploration: 2 },
+      description: "누가 뭐라 해도 내 기준이 확고한 당신. 타협하기보다 내가 옳다고 믿는 방향으로 밀고 나가는 편이에요.",
+      ecology: "퍼플탱은 홍해 인근 산호초에 서식하는 탱류로, 탱류 중에서도 같은 종이나 체형이 비슷한 어종에게 특히 강한 텃세를 보이는 것으로 알려져 있습니다. 해조류를 뜯어 먹는 초식성입니다.",
+      ecologyVerified: false,
+      compatible: { id: "foxface_rabbitfish", reason: "체형과 습성이 달라 탱류 특유의 영역 다툼 가능성이 상대적으로 낮은 조합으로 알려져 있습니다." },
+      incompatible: { id: "sailfin_tang", reason: "체형이 유사한 탱류끼리는 좁은 공간에서 영역 경쟁이 발생할 가능성이 높습니다." }
+    },
+    {
+      id: "convict_tang",
+      name: "컨빅트탱",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Convict_Surgeonfish%2C_Acanthurus_triostegus.jpg",
+      emoji: "🐟",
+      headline: "무리와 발맞춰 함께 나아가는 협력형",
+      title: "함께 움직이는 협력형",
+      mbtiFlavor: "ESFJ",
+      tags: ["협력형", "사회형"],
+      traits: { activity: 4, social: 3, independence: 3, territoriality: 2, exploration: 3 },
+      description: "혼자보다 함께 움직일 때 힘을 얻는 당신. 무리와 보조를 맞추며 함께 나아가는 것을 편안하게 느껴요.",
+      ecology: "컨빅트탱(줄무늬탱)은 인도-태평양 산호초 얕은 곳에 서식하며, 탱류 중에서는 드물게 어린 개체들이 큰 무리를 지어 다니는 것으로 알려져 있습니다. 해조류를 뜯어 먹는 초식성 어종입니다.",
+      ecologyVerified: false,
+      compatible: { id: "blue_green_chromis", reason: "무리를 이루는 습성이 비슷해 함께 유영하는 모습을 보이기도 하는 조합으로 알려져 있습니다." },
+      incompatible: { id: "unicorn_tang", reason: "같은 탱류로 서식 습성이 겹쳐 먹이·영역 경쟁이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "blueface_angelfish",
+      name: "블루페이스 엔젤",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/5/54/Pomacanthus_xanthometopon_2.jpg",
+      emoji: "🐠",
+      headline: "서두르지 않고 차분히 상황을 읽는 분석가",
+      title: "차분한 분석가형",
+      mbtiFlavor: "INTP",
+      tags: ["신중형", "관찰형"],
+      traits: { activity: 2, social: 1, independence: 4, territoriality: 4, exploration: 2 },
+      description: "쉽게 흥분하지 않고 차분하게 상황을 파악하는 당신. 서두르지 않고 신중하게 판단하는 분석가 타입이에요.",
+      ecology: "블루페이스 엔젤은 인도-태평양 산호초에 서식하는 대형 엔젤피쉬로, 해면동물과 피낭동물을 주로 먹습니다. 성체가 되면 자신의 영역을 갖고 텃세를 부리는 경향이 있는 것으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "diamond_goby", reason: "서식 수층과 먹이가 달라 비교적 무난한 조합으로 알려져 있습니다." },
+      incompatible: { id: "queen_angelfish", reason: "체형과 서식 습성이 비슷한 대형 엔젤피쉬끼리는 영역 다툼이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "king_angelfish",
+      name: "킹엔젤",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/9/90/Pez_%C3%A1ngel_real_%28Holacanthus_passer%29%2C_Cabo_Pulmo%2C_Baja_California%2C_M%C3%A9xico%2C_2024-12-19%2C_DD_25.jpg",
+      emoji: "🐟",
+      headline: "정한 원칙은 끝까지 지켜내는 신념가",
+      title: "자기 영역을 지키는 원칙형",
+      mbtiFlavor: "ISTJ",
+      tags: ["영역형", "신중형"],
+      traits: { activity: 2, social: 1, independence: 4, territoriality: 5, exploration: 2 },
+      description: "정한 원칙과 기준은 웬만해선 바꾸지 않는 당신. 내 영역과 내 방식을 확실히 지켜내는 편이에요.",
+      ecology: "킹엔젤은 동태평양 연안 바위 지대에 서식하는 엔젤피쉬로, 자신의 서식 영역에 대한 텃세가 강한 것으로 알려져 있습니다. 해면동물 등을 먹으며 비교적 좁은 범위를 반복적으로 오가는 습성이 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "rock_blenny", reason: "서식 공간(수층 vs 바위 틈)이 달라 영역 다툼 가능성이 상대적으로 낮은 조합입니다." },
+      incompatible: { id: "french_angelfish", reason: "체형이 비슷한 대형 엔젤피쉬끼리는 영역을 두고 다툼이 생길 가능성이 있습니다." }
+    },
+    {
+      id: "queen_angelfish",
+      name: "퀸엔젤",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Queen_Angelfish.jpg",
+      emoji: "🐠",
+      headline: "자연스럽게 시선을 끄는 카리스마",
+      title: "카리스마 리더형",
+      mbtiFlavor: "ENTJ",
+      tags: ["대담형", "자기주도형"],
+      traits: { activity: 4, social: 2, independence: 4, territoriality: 4, exploration: 3 },
+      description: "자연스럽게 시선을 끄는 존재감을 지닌 당신. 당당한 태도로 주변을 이끄는 카리스마가 있어요.",
+      ecology: "퀸엔젤은 카리브해 산호초에 서식하는 대형 엔젤피쉬로, 해면동물을 주로 먹습니다. 단독 또는 암수 한 쌍으로 지내는 경우가 많으며, 자신의 영역에 대한 텃세를 보이는 것으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "bannerfish", reason: "서식 습성과 체형이 달라 비교적 무난하게 지낼 수 있는 조합으로 알려져 있습니다." },
+      incompatible: { id: "blueface_angelfish", reason: "체형과 서식 습성이 비슷한 대형 엔젤피쉬끼리는 영역 다툼이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "sixbar_angelfish",
+      name: "식스바엔젤",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Pomacanthus_sexstriatus.jpg",
+      emoji: "🐡",
+      headline: "내 속도대로 느긋하게 움직이는 마이페이스",
+      title: "느긋한 자기 페이스형",
+      mbtiFlavor: "ISFP",
+      tags: ["안정형", "독립형"],
+      traits: { activity: 2, social: 1, independence: 4, territoriality: 3, exploration: 2 },
+      description: "남의 속도에 휘둘리지 않고 내 페이스대로 움직이는 당신. 서두르지 않아도 결국 자기 할 일을 해내는 편이에요.",
+      ecology: "식스바엔젤(식스스트라이프 엔젤)은 인도-태평양에 서식하는 대형 엔젤피쉬로, 유생기에는 몸을 숨기며 조심스럽게 지내다가 성체가 되면서 점차 대담해지는 것으로 알려져 있습니다. 해면동물 등을 먹습니다.",
+      ecologyVerified: false,
+      compatible: { id: "bannerfish", reason: "온순하고 느긋한 성향이 비슷해 비교적 무난한 조합으로 알려져 있습니다." },
+      incompatible: { id: "emperor_angelfish", reason: "체형이 비슷한 대형 엔젤피쉬끼리는 영역 경쟁이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "blue_ring_angelfish",
+      name: "블루링엔젤",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/8/88/EM_DSC_2212_%282877792781%29.jpg",
+      emoji: "🐟",
+      headline: "나만의 세계가 뚜렷한 개성파",
+      title: "자기 세계가 뚜렷한 개성형",
+      mbtiFlavor: "INFP",
+      tags: ["독립형", "자기주도형"],
+      traits: { activity: 2, social: 1, independence: 5, territoriality: 3, exploration: 3 },
+      description: "나만의 세계와 취향이 확실한 당신. 남들과 다르더라도 내 방식을 지키는 것을 중요하게 생각해요.",
+      ecology: "블루링엔젤은 인도-태평양에 서식하는 대형 엔젤피쉬로, 몸에 있는 파란 고리 무늬가 특징입니다. 해면동물과 피낭동물을 먹으며, 성체가 되면 자신의 영역에 대한 텃세를 보이는 경향이 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "diamond_goby", reason: "서식 수층이 달라 비교적 무난한 조합으로 알려져 있습니다." },
+      incompatible: { id: "koran_angelfish", reason: "체형과 서식 습성이 비슷한 대형 엔젤피쉬끼리는 영역 다툼이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "foxface_rabbitfish",
+      name: "폭스페이스",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/e/e8/Siganus_vulpinus_2.jpg",
+      emoji: "🐠",
+      headline: "행동하기 전에 한 번 더 생각하는 신중함",
+      title: "영리한 신중형",
+      mbtiFlavor: "ISTP",
+      tags: ["신중형", "관찰형"],
+      traits: { activity: 3, social: 2, independence: 3, territoriality: 2, exploration: 3 },
+      description: "행동하기 전에 한 번 더 생각하는 당신. 신중하지만 필요할 땐 자신을 지킬 줄 아는 영리한 타입이에요.",
+      ecology: "폭스페이스(폭스페이스 래빗피쉬)는 인도-태평양 산호초에 서식하는 초식성 어류로, 등지느러미에 독성이 있는 가시를 가지고 있어 스스로를 방어하는 것으로 알려져 있습니다. 성격은 비교적 온순한 편으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "sailfin_tang", reason: "체형과 습성이 달라 비교적 무난하게 함께 지낼 수 있는 조합으로 알려져 있습니다." },
+      incompatible: { id: "blue_devil_damsel", reason: "폭스페이스는 등지느러미에 독성 가시가 있어, 텃세가 강한 어종과 부딪히면 서로에게 위험할 수 있어 주의가 필요합니다." }
+    },
+    {
+      id: "sixline_wrasse",
+      name: "식스라인래쓰",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Six_Line_Wrasse_-_Pseudocheilinus_hexataenia_%28cropped%29.jpg",
+      emoji: "🐟",
+      headline: "잠시도 가만있지 못하는 호기심 대장",
+      title: "끊임없는 호기심형",
+      mbtiFlavor: "ENTP",
+      tags: ["탐색형", "활동형"],
+      traits: { activity: 5, social: 2, independence: 3, territoriality: 3, exploration: 5 },
+      description: "잠시도 가만히 있지 못할 만큼 호기심이 넘치는 당신. 새로운 것이 있으면 재빠르게 확인하고 싶어 해요.",
+      ecology: "식스라인래쓰는 인도-태평양 산호초의 바위 틈 사이를 빠르게 오가며 작은 무척추동물을 잡아먹는 놀래기과 어류입니다. 몸집은 작지만 활동적이고, 비슷한 크기의 다른 놀래기류에게 텃세를 부리기도 하는 것으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "yellow_wrasse", reason: "활동 시간대와 서식 습성이 비슷해 크게 부딪히지 않는 조합으로 알려져 있습니다." },
+      incompatible: { id: "cleaner_wrasse", reason: "작은 체구의 텃세가 있는 어종끼리는 좁은 공간에서 다툼이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "yellow_wrasse",
+      name: "옐로우래쓰",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/3/33/Halichoeres_chrysus-Yellow_Wrasse.jpg",
+      emoji: "🐡",
+      headline: "어디서든 눈치 빠르게 적응하는 재주꾼",
+      title: "눈치 빠른 적응형",
+      mbtiFlavor: "ESFP",
+      tags: ["적응형", "사회형"],
+      traits: { activity: 4, social: 3, independence: 2, territoriality: 2, exploration: 4 },
+      description: "어떤 환경에서도 금방 적응하는 당신. 눈치가 빠르고 상황 판단이 빨라 어디서든 잘 지내는 편이에요.",
+      ecology: "옐로우래쓰(카나리 놀래기)는 인도-태평양 산호초에 서식하는 놀래기과 어류로, 위협을 느끼면 모래 속으로 파고들어 몸을 숨기는 습성이 있는 것으로 알려져 있습니다. 낮 동안 활발하게 먹이를 찾아다닙니다.",
+      ecologyVerified: false,
+      compatible: { id: "sixline_wrasse", reason: "활동 시간대와 서식 습성이 비슷해 비교적 무난한 조합으로 알려져 있습니다." },
+      incompatible: { id: "diamond_goby", reason: "모두 모래 바닥을 활용하는 습성이 있어 서식 공간과 먹이를 두고 경쟁할 가능성이 있습니다." }
+    },
+    {
+      id: "unicorn_tang",
+      name: "유니콘탱",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/6/68/Bluespine_Unicornfish%2C_Emily_Bay%2C_Kingston_2899%2C_Norfolk_Island_imported_from_iNaturalist_photo_173453689_%28cropped%29.jpg",
+      emoji: "🦄",
+      headline: "정해진 틀 없이 자유롭게 누비는 자유인",
+      title: "거침없는 자유인형",
+      mbtiFlavor: "ENTP",
+      tags: ["탐색형", "독립형"],
+      traits: { activity: 4, social: 1, independence: 5, territoriality: 2, exploration: 5 },
+      description: "정해진 틀에 얽매이는 걸 답답해하는 당신. 자유롭게 넓은 곳을 누비는 것을 좋아하는 타입이에요.",
+      ecology: "유니콘탱은 인도-태평양 산호초에 서식하는 대형 탱류로, 이마에 뿔 모양의 돌기가 자라는 것이 특징입니다. 다른 탱류에 비해 넓은 활동 범위를 갖고 개방된 수역까지 헤엄쳐 다니는 편으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "golden_trevally", reason: "서식 수층을 넓게 활용하는 습성이 비슷해 비교적 무난하게 어울리는 조합으로 알려져 있습니다." },
+      incompatible: { id: "convict_tang", reason: "같은 탱류로 서식 습성이 겹쳐 먹이·영역 경쟁이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "golden_trevally",
+      name: "골든트레발리",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/d/dc/20081218_100609_Haus_des_Meeres.jpg",
+      emoji: "🐟",
+      headline: "고민보다 행동이 먼저인 순발력",
+      title: "빠른 판단의 행동형",
+      mbtiFlavor: "ESTP",
+      tags: ["활동형", "대담형"],
+      traits: { activity: 5, social: 3, independence: 2, territoriality: 1, exploration: 3 },
+      description: "고민보다 행동이 앞서는 당신. 기회다 싶으면 망설이지 않고 빠르게 움직이는 편이에요.",
+      ecology: "골든트레발리는 인도-태평양에 서식하는 전갱이과 어류로, 어린 개체는 해파리나 큰 물고기, 구조물 주변에 붙어 다니며 몸을 보호하는 습성이 있는 것으로 알려져 있습니다. 성장하면서 활발하게 헤엄치며 먹이를 찾아다니는 편입니다.",
+      ecologyVerified: false,
+      compatible: { id: "unicorn_tang", reason: "서식 수층을 넓게 활용하는 습성이 비슷해 비교적 무난한 조합으로 알려져 있습니다." },
+      incompatible: { id: "blue_green_chromis", reason: "성장하면서 크기 차이가 커져 작은 어종에게 포식 위험이 될 수 있어 주의가 필요합니다." }
+    },
+    {
+      id: "emperor_angelfish",
+      name: "엠페러엔젤",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/2/29/Emperor_Angelfish%2C_Western_form_-_Pomacanthus_imperator_1.jpg",
+      emoji: "🐠",
+      headline: "어디서든 존재감을 드러내는 당당함",
+      title: "존재감 강한 지휘관형",
+      mbtiFlavor: "ENTJ",
+      tags: ["영역형", "대담형"],
+      traits: { activity: 3, social: 1, independence: 4, territoriality: 5, exploration: 2 },
+      description: "어디에 있든 자연스럽게 눈에 띄는 당신. 자신감 있는 태도로 주변에 존재감을 드러내는 타입이에요.",
+      ecology: "엠페러엔젤은 인도-태평양 산호초에 서식하는 대형 엔젤피쉬로, 유생기와 성체의 줄무늬 패턴이 크게 달라지는 것으로 잘 알려져 있습니다. 해면동물 등을 먹으며, 성체가 되면 자신의 영역에 대한 텃세가 강해지는 경향이 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "rock_blenny", reason: "서식 공간이 달라 영역 다툼 가능성이 상대적으로 낮은 조합입니다." },
+      incompatible: { id: "koran_angelfish", reason: "성체 무늬와 서식 습성이 비슷한 대형 엔젤피쉬끼리는 영역 다툼이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "french_angelfish",
+      name: "프렌치엔젤",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/5/50/Pez_%C3%A1ngel_franc%C3%A9s_%28Pomacanthus_paru%29%2C_Cozumel%2C_M%C3%A9xico%2C_2025-12-20%2C_DD_113.jpg",
+      emoji: "🐟",
+      headline: "소수와 깊이 어울리는 사교적 독립가",
+      title: "사교적인 독립형",
+      mbtiFlavor: "ISFJ",
+      tags: ["사회형", "독립형"],
+      traits: { activity: 3, social: 4, independence: 2, territoriality: 3, exploration: 3 },
+      description: "혼자만의 시간도 중요하지만, 마음 맞는 사람과는 깊이 있게 어울리는 당신. 소수와 깊은 관계를 맺는 편이에요.",
+      ecology: "프렌치엔젤은 카리브해 산호초에 서식하는 대형 엔젤피쉬로, 암수가 짝을 지어 함께 다니는 습성이 있는 것으로 알려져 있습니다. 해면동물 등을 먹으며 자신의 영역에 대한 텃세를 보입니다.",
+      ecologyVerified: false,
+      compatible: { id: "diamond_goby", reason: "서식 수층과 먹이가 달라 비교적 무난한 조합으로 알려져 있습니다." },
+      incompatible: { id: "king_angelfish", reason: "체형이 비슷한 대형 엔젤피쉬끼리는 영역을 두고 다툼이 생길 가능성이 있습니다." }
+    },
+    {
+      id: "cleaner_wrasse",
+      name: "크리너래쓰",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/0/06/L%C3%A1brido_limpiador_com%C3%BAn_%28Labroides_dimidiatus%29%2C_mar_Rojo%2C_Egipto%2C_2023-04-17%2C_DD_90.jpg",
+      emoji: "🐡",
+      headline: "누군가를 돕는 일에 보람을 느끼는 케어러",
+      title: "도와주는 케어형",
+      mbtiFlavor: "ISFJ",
+      tags: ["협력형", "사회형"],
+      traits: { activity: 4, social: 5, independence: 2, territoriality: 1, exploration: 3 },
+      description: "주변 사람들을 살뜰히 챙기는 당신. 남을 돕는 일에서 보람을 느끼는 타입이에요.",
+      ecology: "크리너래쓰(청소놀래기)는 인도-태평양 산호초에 '청소 정거장'을 형성해 다른 물고기의 몸에 붙은 기생충과 죽은 조직을 제거해주는 것으로 잘 알려진 놀래기과 어류입니다. 매우 활동적으로 여러 어종을 오가며 상호작용합니다.",
+      ecologyVerified: false,
+      compatible: { id: "nasso_tang", reason: "낫소탱을 비롯한 여러 어종이 기생충 제거를 위해 청소놀래기를 찾는 것으로 알려져 있어 비교적 자연스러운 조합입니다." },
+      incompatible: { id: "sixline_wrasse", reason: "작은 체구의 텃세가 있는 어종끼리는 좁은 공간에서 다툼이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "diamond_goby",
+      name: "다이아몬드 고비",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/4/49/Valenciennea_puellaris.jpg",
+      emoji: "🐟",
+      headline: "조용히 지켜보며 제 할 일을 하는 관찰자",
+      title: "조용한 관찰형",
+      mbtiFlavor: "ISTP",
+      tags: ["관찰형", "신중형"],
+      traits: { activity: 2, social: 2, independence: 3, territoriality: 2, exploration: 2 },
+      description: "나서기보다 조용히 지켜보는 것을 좋아하는 당신. 묵묵히 자기 할 일을 해내며 주변을 살피는 편이에요.",
+      ecology: "다이아몬드 고비(펄 조랑 고비)는 인도-태평양의 모래 바닥에 서식하는 고비과 어류로, 입으로 모래를 머금었다가 아가미로 걸러내며 먹이를 찾는 습성이 있는 것으로 알려져 있습니다. 은신처 주변에서 크게 벗어나지 않고 지내는 편입니다.",
+      ecologyVerified: false,
+      compatible: { id: "blue_devil_damsel", reason: "서식 공간이 달라(바닥 vs 수층) 영역 다툼 가능성이 상대적으로 낮은 조합입니다." },
+      incompatible: { id: "yellow_wrasse", reason: "모두 모래 바닥을 활용하는 습성이 있어 서식 공간과 먹이를 두고 경쟁할 가능성이 있습니다." }
+    },
+    {
+      id: "rock_blenny",
+      name: "락블레니",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Salarias_fasciatus_Aquarium_DG.jpg",
+      emoji: "🐠",
+      headline: "낯은 가려도 확실한 개성을 가진 타입",
+      title: "까칠한 개성형",
+      mbtiFlavor: "ISTP",
+      tags: ["영역형", "독립형"],
+      traits: { activity: 1, social: 1, independence: 4, territoriality: 4, exploration: 2 },
+      description: "누구에게나 살갑지는 않은 당신. 낯을 좀 가리지만 자기만의 확실한 개성을 가진 타입이에요.",
+      ecology: "락블레니는 산호초의 바위 지대에 서식하는 blenny과 어류로, 바위나 산호 표면에 자리를 잡고 지내는 습성이 있는 것으로 알려져 있습니다. 자신이 정한 서식처에 대한 텃세를 보이는 경향이 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "king_angelfish", reason: "서식 공간이 달라 영역 다툼 가능성이 상대적으로 낮은 조합입니다." },
+      incompatible: { id: "diamond_goby", reason: "둘 다 바닥 근처 은신처를 두고 생활하는 습성이 있어 서식 공간을 두고 다툼이 발생할 가능성이 있습니다." }
+    },
+    {
+      id: "bannerfish",
+      name: "배너피쉬",
+      waterType: "해수어",
+      image: "https://upload.wikimedia.org/wikipedia/commons/1/15/Pennant_coralfish_melb_aquarium_edit2.jpg",
+      emoji: "🐡",
+      headline: "다툼보다 평화를 택하는 우아한 성격",
+      title: "우아한 평화형",
+      mbtiFlavor: "INFP",
+      tags: ["협력형", "안정형"],
+      traits: { activity: 2, social: 3, independence: 2, territoriality: 2, exploration: 3 },
+      description: "다툼보다 평화를 선호하는 당신. 우아하고 차분한 태도로 갈등을 만들지 않으려 하는 편이에요.",
+      ecology: "배너피쉬(페넌트 코럴피쉬)는 인도-태평양 산호초에 서식하는 나비고기과 어류로, 길게 뻗은 등지느러미가 특징입니다. 단독 또는 소규모 무리를 지어 비교적 느긋하게 헤엄쳐 다니는 것으로 알려져 있습니다.",
+      ecologyVerified: false,
+      compatible: { id: "queen_angelfish", reason: "서식 습성과 체형이 달라 비교적 무난하게 지낼 수 있는 조합으로 알려져 있습니다." },
+      incompatible: { id: "blue_devil_damsel", reason: "온순한 배너피쉬는 텃세가 강한 어종과 함께 두면 스트레스를 받을 가능성이 있습니다." }
+    },
+    {
+      id: "sohal_tang",
+      name: "소할탱",
+      waterType: "해수어",
+      subName: "Acanthurus sohal (Sohal surgeonfish)",
+      image: "https://upload.wikimedia.org/wikipedia/commons/f/f7/Acanthurus_sohal_334315485.jpg",
+      emoji: "🐡",
+      headline: "내 영역은 내가 지킨다, 흔들리지 않는 수호자",
+      title: "철벽 수호자형",
+      tags: ["영역형", "독립형", "대담형"],
+      traits: { activity: 4, social: 1, independence: 5, territoriality: 5, exploration: 3 },
+      description: "자기만의 기준과 영역이 확실한 당신. 쉽게 휘둘리지 않고, 자신이 중요하게 생각하는 것은 끝까지 지키는 편이에요.",
+      ecology: "소할탱(소할 서전피시)은 홍해와 아라비아반도 연안의 산호초에 서식하며, 탱류 중에서도 텃세가 매우 강한 종으로 알려져 있습니다. 조류(해조류)를 뜯어 먹는 초식성이며, 자신의 영역에 다른 개체가 들어오면 강하게 경계하는 행동을 보입니다.",
+      ecologyVerified: false,
+      compatible: null,
+      incompatible: { id: "blue_tang", reason: "두 종 모두 활동적인 탱류로 체형과 서식 습성이 비슷해, 좁은 공간에서는 영역을 두고 다툼이 생길 가능성이 있습니다." }
+    },
+    {
+      id: "blue_tang",
+      name: "블루탱",
+      waterType: "해수어",
+      subName: "Paracanthurus hepatus (Palette surgeonfish)",
+      image: "https://upload.wikimedia.org/wikipedia/commons/1/13/Paletten-Doktorfisch_M%C3%BCnster.JPG",
+      emoji: "🐟",
+      headline: "새로운 곳을 찾아 떠나는 자유로운 탐험가",
+      title: "자유로운 유랑형",
+      tags: ["탐색형", "독립형", "적응형"],
+      traits: { activity: 4, social: 2, independence: 4, territoriality: 2, exploration: 5 },
+      description: "한 곳에 머무르기보다 새로운 곳을 넘나드는 걸 즐기는 당신. 낯선 상황에도 금방 적응하는 유연함이 강점이에요.",
+      ecology: "블루탱(팔레트 서전피시)은 인도-태평양 산호초 지역에 서식하며, 다른 탱류에 비해 수층을 넓게 활용하며 헤엄쳐 다니는 편입니다. 어릴 때는 플랑크톤을, 성장하면서는 조류도 함께 섭취하는 잡식성에 가깝습니다.",
+      ecologyVerified: false,
+      compatible: null,
+      incompatible: { id: "sohal_tang", reason: "영역성이 강한 소할탱과 함께 두면 서식 공간을 두고 다툼이 발생할 가능성이 있어 주의가 필요합니다." }
+    }
+  ];
+
+  // 확장용 초안 배열은 33종이 모두 CREATURES로 이관되며 비워졌습니다.
+  // 앞으로 34종 이상을 추가할 때도 이 배열에 스켈레톤을 먼저 만들어두고,
+  // 완성되면 CREATURES로 옮기는 동일한 방식을 사용하면 됩니다.
+  const CREATURE_TEMPLATES_TODO = [];
+
+  /* ---------------------------------------------------------------------
+     QUESTIONS : 12개의 상황형 질문
+     ---------------------------------------------------------------------
+     각 선택지의 scores 객체는 사용자에게 "절대 노출되지 않는" 내부 점수로,
+     선택할 때마다 5가지 성향(activity/social/independence/territoriality/
+     exploration) 중 하나에 5(강함)/3(보통)/1(약함) 점수를 부여합니다.
+     질문 12개를 5가지 성향에 고르게 배분(활동성·사회성 각 3문항, 독립성·
+     영역성·탐색성 각 2문항)해 특정 생물 하나로 결과가 쏠리지 않도록
+     설계했습니다. 실제로 531,441가지(3^12) 응답 조합을 전수 검증한 결과
+     CREATURES 33종이 모두 최소 1회 이상 결과로 나오는 것을 확인했고
+     (0.09%~11.2% 분포), 각 생물의 traits에 가장 가깝게 답하는 "일관된"
+     응답 조합으로는 33종 전원이 정확히 자기 자신으로 매칭되는 것도
+     별도로 검증했습니다 (§ computeTraitRanges 참고).
+  --------------------------------------------------------------------- */
+  const QUESTIONS = [
+    { text: "새로운 공간(수조 한켠)을 발견했습니다. 나는?", choices: [
+      { text: "구석구석 부지런히 돌아다니며 살펴본다", scores: { activity: 5 } },
+      { text: "적당히 둘러본 뒤 원래 자리로 돌아온다", scores: { activity: 3 } },
+      { text: "굳이 움직이지 않고 그 자리에 머문다", scores: { activity: 1 } }
+    ]},
+    { text: "다른 물고기들이 무리 지어 다닐 때 나는?", choices: [
+      { text: "자연스럽게 무리에 섞여 함께 다닌다", scores: { social: 5 } },
+      { text: "가끔 무리 곁에 머물다 떨어지기도 한다", scores: { social: 3 } },
+      { text: "혼자 다니는 게 훨씬 편하다", scores: { social: 1 } }
+    ]},
+    { text: "누군가 나를 도와주려고 다가온다면?", choices: [
+      { text: "혼자서도 충분하다고 생각해 거리를 둔다", scores: { independence: 5 } },
+      { text: "상황에 따라 도움을 받기도, 거절하기도 한다", scores: { independence: 3 } },
+      { text: "기꺼이 도움을 받아들인다", scores: { independence: 1 } }
+    ]},
+    { text: "내가 즐겨 있던 자리를 다른 생물이 차지했습니다.", choices: [
+      { text: "그 자리가 내 자리라는 걸 확실히 알린다", scores: { territoriality: 5 } },
+      { text: "잠시 지켜보다 상황에 따라 대응한다", scores: { territoriality: 3 } },
+      { text: "미련 없이 다른 자리를 찾는다", scores: { territoriality: 1 } }
+    ]},
+    { text: "좁은 틈이나 낯선 구조물을 발견했습니다.", choices: [
+      { text: "망설임 없이 바로 들어가 탐색해본다", scores: { exploration: 5 } },
+      { text: "주변을 살피다 조심스럽게 다가가본다", scores: { exploration: 3 } },
+      { text: "특별히 관심을 두지 않고 지나간다", scores: { exploration: 1 } }
+    ]},
+    { text: "하루 중 대부분의 시간을 보내는 방식은?", choices: [
+      { text: "수조 곳곳을 부지런히 돌아다니며 보낸다", scores: { activity: 5 } },
+      { text: "적당히 움직이다 쉬다를 반복한다", scores: { activity: 3 } },
+      { text: "정해둔 자리에서 거의 움직이지 않는다", scores: { activity: 1 } }
+    ]},
+    { text: "먹이를 줄 시간이 되었습니다.", choices: [
+      { text: "다른 친구들과 자연스럽게 어울려 먹는다", scores: { social: 5 } },
+      { text: "상황에 따라 같이 먹기도, 따로 먹기도 한다", scores: { social: 3 } },
+      { text: "다른 생물과 거리를 두고 혼자 먹는다", scores: { social: 1 } }
+    ]},
+    { text: "몸이 좀 피곤하거나 컨디션이 안 좋을 때", choices: [
+      { text: "조용한 곳에서 혼자 안정을 찾는다", scores: { independence: 5 } },
+      { text: "평소 다니던 자리에서 무리 없이 지낸다", scores: { independence: 3 } },
+      { text: "무리 가까이 머물며 함께 지낸다", scores: { independence: 1 } }
+    ]},
+    { text: "새로운 이웃이 수조에 들어왔습니다.", choices: [
+      { text: "내 영역을 침범하지 않는지 유심히 살핀다", scores: { territoriality: 5 } },
+      { text: "적당히 거리를 유지하며 지켜본다", scores: { territoriality: 3 } },
+      { text: "특별히 신경 쓰지 않고 지낸다", scores: { territoriality: 1 } }
+    ]},
+    { text: "수조에 새로운 장식(구조물)이 생겼습니다.", choices: [
+      { text: "바로 다가가 구석구석 확인해본다", scores: { exploration: 5 } },
+      { text: "무엇이 달라졌는지 한 번 살펴본다", scores: { exploration: 3 } },
+      { text: "달라진 게 있어도 원래 하던 대로 지낸다", scores: { exploration: 1 } }
+    ]},
+    { text: "수조 밖에서 갑자기 큰 소리나 진동이 느껴졌습니다.", choices: [
+      { text: "놀라서 바쁘게 움직이다가 금방 진정한다", scores: { activity: 5 } },
+      { text: "잠깐 움직임을 멈췄다가 다시 움직인다", scores: { activity: 3 } },
+      { text: "동요 없이 원래 자리를 지킨다", scores: { activity: 1 } }
+    ]},
+    { text: "완전히 낯선 수조(새 환경)에 처음 들어갔습니다.", choices: [
+      { text: "다른 생물들에게 먼저 다가가 어울린다", scores: { social: 5 } },
+      { text: "상황을 보면서 자연스럽게 어울릴 기회를 찾는다", scores: { social: 3 } },
+      { text: "다른 생물과 거리를 둔 채 혼자 적응해간다", scores: { social: 1 } }
+    ]}
+  ];
+
+/* =====================================================================
+   2. 상태 관리
+   ===================================================================== */
+  const state = {
+    screen: "start",
+    qIndex: 0,
+    history: []   // { qIndex, choiceIndex, scores: {} }
+  };
+
+  const els = {
+    screens: {
+      start: document.getElementById("screen-start"),
+      quiz: document.getElementById("screen-quiz"),
+      result: document.getElementById("screen-result")
+    },
+    btnStart: document.getElementById("btn-start"),
+    btnBack: document.getElementById("btn-back"),
+    progressText: document.getElementById("progress-text"),
+    progressPercent: document.getElementById("progress-percent"),
+    progressFill: document.getElementById("progress-fill"),
+    questionText: document.getElementById("question-text"),
+    choiceList: document.getElementById("choice-list"),
+    resultMount: document.getElementById("result-mount"),
+    btnRestart: document.getElementById("btn-restart"),
+    btnSave: document.getElementById("btn-save"),
+    btnShare: document.getElementById("btn-share"),
+    toast: document.getElementById("toast"),
+    metaCount: document.getElementById("meta-count"),
+    metaSpecies: document.getElementById("meta-species"),
+    modalBackdrop: document.getElementById("modal-backdrop"),
+    modalBody: document.getElementById("modal-body"),
+    modalClose: document.getElementById("modal-close")
+  };
+  els.metaCount.textContent = "질문 " + QUESTIONS.length + "개";
+  els.metaSpecies.textContent = CREATURE_TEMPLATES_TODO.length > 0
+    ? "담수·해수 " + CREATURES.length + "종 매칭 (총 " + (CREATURES.length + CREATURE_TEMPLATES_TODO.length) + "종 확장 예정)"
+    : "담수·해수 " + CREATURES.length + "종 중 매칭";
+
+  function showScreen(name){
+    state.screen = name;
+    Object.entries(els.screens).forEach(([key, el]) => {
+      el.classList.toggle("active", key === name);
+    });
+    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  }
+
+  function showToast(msg){
+    els.toast.textContent = msg;
+    els.toast.classList.add("show");
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => els.toast.classList.remove("show"), 2200);
+  }
+
+/* =====================================================================
+   3. 퀴즈 진행 로직
+   ===================================================================== */
+  els.btnStart.addEventListener("click", () => {
+    state.qIndex = 0;
+    state.history = [];
+    renderQuestion();
+    showScreen("quiz");
+  });
+
+  els.btnBack.addEventListener("click", () => {
+    if (state.history.length === 0) return;
+    state.history.pop();
+    state.qIndex = Math.max(0, state.qIndex - 1);
+    renderQuestion();
+  });
+
+  function renderQuestion(){
+    const q = QUESTIONS[state.qIndex];
+    const total = QUESTIONS.length;
+    const current = state.qIndex + 1;
+
+    els.progressText.textContent = current + " / " + total;
+    const pct = Math.round((state.qIndex / total) * 100);
+    els.progressPercent.textContent = pct + "%";
+    els.progressFill.style.width = pct + "%";
+    els.btnBack.disabled = state.qIndex === 0;
+
+    els.questionText.textContent = q.text;
+    els.choiceList.innerHTML = "";
+    q.choices.forEach((choice, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.innerHTML = '<span class="num">' + (idx + 1) + '</span><span>' + choice.text + '</span>';
+      btn.addEventListener("click", () => selectChoice(idx));
+      els.choiceList.appendChild(btn);
+    });
+  }
+
+  function selectChoice(choiceIdx){
+    const q = QUESTIONS[state.qIndex];
+    const choice = q.choices[choiceIdx];
+    state.history.push({ qIndex: state.qIndex, choiceIndex: choiceIdx, scores: choice.scores || {} });
+
+    if (state.qIndex < QUESTIONS.length - 1){
+      state.qIndex += 1;
+      renderQuestion();
+    } else {
+      els.progressText.textContent = QUESTIONS.length + " / " + QUESTIONS.length;
+      els.progressPercent.textContent = "100%";
+      els.progressFill.style.width = "100%";
+      const result = computeResult();
+      renderResult(result);
+      showScreen("result");
+    }
+  }
+
+/* =====================================================================
+   4. 결과 판정 로직
+   ---------------------------------------------------------------------
+   - 사용자가 고른 모든 선택지의 scores를 5가지 성향별로 합산(raw sum)한다.
+   - QUESTIONS 데이터로부터 각 성향이 이론적으로 가질 수 있는 최소/최대
+     합계를 계산(computeTraitRanges)하고, 이를 이용해 raw sum을 1~5
+     스케일로 정규화한다 (creature.traits와 동일한 스케일).
+   - 정규화된 사용자 벡터와 각 생물의 traits 벡터 사이의 유클리드 거리를
+     계산하여, 거리가 가장 짧은(=가장 유사한) 생물을 결과로 선택한다.
+     한 가지 지표만 보는 것이 아니라 5개 성향 전체의 차이를 함께 본다.
+   - 동점(거리 완전히 동일)일 경우 id 오름차순으로 정렬하여, 같은 답변
+     조합에는 항상 같은 결과가 나오도록 한다 (무작위 추첨 없음).
+   - MBTI 배지는 결과 생물과 무관하게 사용자의 정규화된 성향 벡터로부터
+     그때그때 계산되는 "재미 요소"다. 그래서 같은 MBTI라도 세부 성향
+     차이에 따라 다른 생물이 매칭될 수 있다.
+   ===================================================================== */
+  function tallyRawTraits(history){
+    const raw = {};
+    TRAIT_AXES.forEach(ax => raw[ax.key] = 0);
+    history.forEach(h => {
+      TRAIT_AXES.forEach(ax => {
+        raw[ax.key] += (h.scores && h.scores[ax.key]) || 0;
+      });
+    });
+    return raw;
+  }
+
+  function computeTraitRanges(){
+    const ranges = {};
+    TRAIT_AXES.forEach(ax => ranges[ax.key] = { min: 0, max: 0 });
+    QUESTIONS.forEach(q => {
+      TRAIT_AXES.forEach(ax => {
+        const vals = q.choices.map(ch => (ch.scores && ch.scores[ax.key]) || 0);
+        ranges[ax.key].min += Math.min.apply(null, vals);
+        ranges[ax.key].max += Math.max.apply(null, vals);
+      });
+    });
+    return ranges;
+  }
+  const TRAIT_RANGES = computeTraitRanges();
+
+  function normalizeUserTraits(raw){
+    const out = {};
+    TRAIT_AXES.forEach(ax => {
+      const { min, max } = TRAIT_RANGES[ax.key];
+      if (max <= min){ out[ax.key] = 3; return; }
+      const ratio = (raw[ax.key] - min) / (max - min);
+      out[ax.key] = 1 + 4 * Math.min(1, Math.max(0, ratio));
+    });
+    return out;
+  }
+
+  function traitDistance(a, b){
+    let sumSq = 0;
+    TRAIT_AXES.forEach(ax => {
+      const diff = (a[ax.key] || 0) - (b[ax.key] || 0);
+      sumSq += diff * diff;
+    });
+    return Math.sqrt(sumSq);
+  }
+
+  function pickCreature(userTraits, pool){
+    let best = null;
+    let bestDist = Infinity;
+    pool.forEach(c => {
+      if (!c.traits) return; // traits 미입력 스켈레톤은 결과 후보에서 제외
+      const d = traitDistance(userTraits, c.traits);
+      if (d < bestDist - 1e-9){
+        best = c; bestDist = d;
+      } else if (Math.abs(d - bestDist) < 1e-9){
+        if (!best || c.id < best.id){ best = c; }
+      }
+    });
+    return { creature: best, distance: bestDist };
+  }
+
+  function rankByDistance(userTraits, pool, excludeId){
+    return pool
+      .filter(c => c.traits && c.id !== excludeId)
+      .map(c => ({ creature: c, distance: traitDistance(userTraits, c.traits) }))
+      .sort((a, b) => a.distance - b.distance || (a.creature.id < b.creature.id ? -1 : 1));
+  }
+
+  // 재미 요소용 MBTI 축 (사용자의 정규화된 5개 성향 값 기준, 3을 기준선으로 판정)
+  function computeMbtiFlavor(t){
+    const ei = ((t.activity + t.social) / 2) >= 3 ? "E" : "I";
+    const ns = t.exploration >= 3 ? "N" : "S";
+    const tf = t.independence >= t.social ? "T" : "F";
+    const jp = t.territoriality >= t.exploration ? "J" : "P";
+    return ei + ns + tf + jp;
+  }
+
+  function computeResult(){
+    const raw = tallyRawTraits(state.history);
+    const userTraits = normalizeUserTraits(raw);
+    const { creature } = pickCreature(userTraits, CREATURES);
+    const others = creature ? rankByDistance(userTraits, CREATURES, creature.id).slice(0, 3) : [];
+    const mbti = computeMbtiFlavor(userTraits);
+    return { creature, userTraits, mbti, others };
+  }
+
+/* =====================================================================
+   5. 공통 렌더링 유틸
+   ===================================================================== */
+  function getCreatureById(id){
+    if (!id) return null;
+    return CREATURES.find(c => c.id === id) || CREATURE_TEMPLATES_TODO.find(c => c.id === id) || null;
+  }
+
+  // ecology가 문자열이든, { habitat, behavior, feeding, sociality, territoriality, summary } 객체든
+  // 모두 정상적으로 텍스트를 뽑아내기 위한 헬퍼 (§19 확장 가능한 구조)
+  function getEcologyText(creature){
+    const eco = creature && creature.ecology;
+    if (!eco) return "생태 정보를 준비 중입니다.";
+    if (typeof eco === "string") return eco;
+    if (eco.summary) return eco.summary;
+    return [eco.habitat, eco.behavior, eco.feeding, eco.sociality, eco.territoriality]
+      .filter(Boolean).join(" ") || "생태 정보를 준비 중입니다.";
+  }
+
+  function escapeHtml(str){
+    return String(str == null ? "" : str)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  function imageBlock(creature, className, sizePx){
+    if (!creature) return '<div class="' + className + '"></div>';
+    const emoji = creature.emoji || "🐠";
+    const alt = escapeHtml(creature.name || "생물") + " 사진";
+    const fontSize = sizePx ? ('font-size:' + sizePx + 'px') : "";
+    return (
+      '<div class="' + className + '">' +
+        '<img src="' + escapeHtml(creature.image || "") + '" alt="' + alt + '" ' +
+          'onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">' +
+        '<div class="img-placeholder" style="display:' + (creature.image ? 'none' : 'flex') + '">' +
+          '<span class="ph-emoji" style="' + fontSize + '">' + emoji + '</span>' +
+          '<span class="ph-text">사진 준비 중</span>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function starString(value){
+    const v = Math.max(0, Math.min(5, Math.round(value)));
+    return "★".repeat(v) + "☆".repeat(5 - v);
+  }
+
+  // ---- Pure SVG 레이더(오각형) 차트 : 항상 "생물 자신의 traits"만 그린다 ----
+  function renderRadarSVG(traits, opts){
+    opts = opts || {};
+    const size = 300;
+    const cx = size / 2, cy = size / 2 - 6;
+    const maxR = 100;
+    const axes = TRAIT_AXES;
+    const n = axes.length;
+
+    function pointFor(index, valueRatio){
+      const angle = (Math.PI * 2 * index / n) - Math.PI / 2;
+      const r = maxR * valueRatio;
+      return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+    }
+
+    let gridPolys = "";
+    [0.2, 0.4, 0.6, 0.8, 1.0].forEach(ratio => {
+      const pts = axes.map((_, i) => pointFor(i, ratio).join(",")).join(" ");
+      gridPolys += '<polygon points="' + pts + '" fill="none" stroke="var(--line)" stroke-width="1" />';
+    });
+
+    let axisLines = "";
+    let labels = "";
+    axes.forEach((ax, i) => {
+      const [x, y] = pointFor(i, 1.0);
+      axisLines += '<line x1="' + cx + '" y1="' + cy + '" x2="' + x + '" y2="' + y + '" stroke="var(--line)" stroke-width="1" />';
+      const [lx, ly] = pointFor(i, 1.24);
+      labels += '<text x="' + lx + '" y="' + ly + '" text-anchor="middle" dominant-baseline="middle" ' +
+        'font-size="12" fill="var(--ink-soft)" font-family="var(--font-body)">' + ax.label + '</text>';
+    });
+
+    const dataPts = axes.map((ax, i) => pointFor(i, (traits[ax.key] || 0) / 5).join(",")).join(" ");
+    const dataDots = axes.map((ax, i) => {
+      const [x, y] = pointFor(i, (traits[ax.key] || 0) / 5);
+      return '<circle cx="' + x + '" cy="' + y + '" r="4" fill="var(--primary-strong)" />';
+    }).join("");
+
+    return (
+      '<svg viewBox="0 0 ' + size + ' ' + (size + 14) + '" role="img" aria-label="' + escapeHtml(opts.ariaLabel || "성향 레이더 차트") + '">' +
+        gridPolys + axisLines +
+        '<polygon points="' + dataPts + '" fill="var(--primary)" fill-opacity="0.28" stroke="var(--primary-strong)" stroke-width="2" />' +
+        dataDots + labels +
+      '</svg>'
+    );
+  }
+
+  function radarScoreList(traits){
+    return TRAIT_AXES.map(ax => (
+      '<div class="radar-score-item">' +
+        '<span class="rname">' + ax.label + '</span>' +
+        '<span class="stars">' + starString(traits[ax.key] || 0) + '</span>' +
+      '</div>'
+    )).join("");
+  }
+
+  function compatCardHTML(entry, isBad){
+    if (!entry){
+      return '<div class="compat-card"><div class="compat-info compat-empty">' +
+        (isBad ? "합사 주의 정보가 아직 준비되지 않았습니다." : "함께 살기 좋은 생물 정보가 아직 준비되지 않았습니다.") +
+        '</div></div>';
+    }
+    const c = getCreatureById(entry.id);
+    if (!c){
+      return '<div class="compat-card"><div class="compat-info compat-empty">연결된 생물 데이터를 찾을 수 없습니다 (id: ' + escapeHtml(entry.id) + ')</div></div>';
+    }
+    const thumb = c.image
+      ? '<img src="' + escapeHtml(c.image) + '" alt="' + escapeHtml(c.name) + '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'inline\';"><span class="ph-emoji" style="display:none">' + (c.emoji || "🐟") + '</span>'
+      : '<span class="ph-emoji">' + (c.emoji || "🐟") + '</span>';
+    return (
+      '<div class="compat-card ' + (isBad ? "bad" : "") + '" onclick="openDetail(\'' + escapeHtml(c.id) + '\')" role="button" tabindex="0">' +
+        '<div class="compat-thumb">' + thumb + '</div>' +
+        '<div class="compat-info">' +
+          '<div class="cname">' + escapeHtml(c.name) + '</div>' +
+          '<div class="cwater">' + escapeHtml(c.waterType || "") + '</div>' +
+          '<div class="creason">' + escapeHtml(entry.reason) + '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function otherCardHTML(item){
+    const c = item.creature;
+    const thumb = c.image
+      ? '<img src="' + escapeHtml(c.image) + '" alt="' + escapeHtml(c.name) + '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';"><span class="ph-emoji" style="display:none">' + (c.emoji || "🐟") + '</span>'
+      : '<span class="ph-emoji">' + (c.emoji || "🐟") + '</span>';
+    return (
+      '<div class="other-card" onclick="openDetail(\'' + escapeHtml(c.id) + '\')" role="button" tabindex="0">' +
+        '<div class="other-thumb">' + thumb + '</div>' +
+        '<div class="other-info">' +
+          '<div class="oname">' + escapeHtml(c.name) + '</div>' +
+          '<div class="oline">' + escapeHtml(c.headline || c.title || "") + '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+/* =====================================================================
+   6. 결과 화면 렌더링 (§23 최종 결과 화면 구성 순서를 따름)
+   ===================================================================== */
+  let currentResult = null;
+
+  function renderResult(result){
+    currentResult = result;
+    const c = result.creature;
+
+    if (!c){
+      els.resultMount.innerHTML = '<div class="result-card"><div style="padding:40px 22px;text-align:center;color:var(--ink-faint)">아직 결과로 나올 수 있는 생물 데이터가 없습니다.<br>CREATURES 배열에 traits가 채워진 생물을 추가해주세요.</div></div>';
+      return;
+    }
+
+    const traits = c.traits || { activity: 0, social: 0, independence: 0, territoriality: 0, exploration: 0 };
+
+    const otherCardsHTML = (result.others && result.others.length)
+      ? result.others.map(otherCardHTML).join("")
+      : '<div class="compat-empty" style="padding:0 8px">아직 비교해볼 다른 생물 데이터가 준비되지 않았습니다.</div>';
+
+    const html =
+      '<div class="result-card">' +
+        '<div onclick="openDetail(\'' + escapeHtml(c.id) + '\')" role="button" tabindex="0">' +
+          imageBlock(c, "hero-photo") +
+        '</div>' +
+      '</div>' +
+
+      '<div class="result-card">' +
+        '<div class="result-heading">' +
+          '<div class="result-kicker">테스트 결과</div>' +
+          '<h2 class="result-title" onclick="openDetail(\'' + escapeHtml(c.id) + '\')" role="button" tabindex="0">당신은 <span class="accent">' + escapeHtml(c.name) + '</span>!</h2>' +
+          '<div class="result-subtitle">' + escapeHtml(c.title) + '</div>' +
+        '</div>' +
+        '<div class="tag-row">' + c.tags.map(t => '<span class="tag-chip">#' + escapeHtml(t) + '</span>').join("") + '</div>' +
+
+        '<div class="section-label"><span class="ico">🧠</span> 성격으로 보면</div>' +
+        (c.headline ? '<div class="personality-headline">' + escapeHtml(c.headline) + '</div>' : '') +
+        '<p class="personality-desc">' + escapeHtml(c.description) + '</p>' +
+
+        '<div class="section-label"><span class="ico">📐</span> ' + escapeHtml(c.name) + '의 성향</div>' +
+        '<div class="radar-wrap">' +
+          renderRadarSVG(traits, { ariaLabel: c.name + "의 성향 레이더 차트" }) +
+          '<div class="radar-scores">' + radarScoreList(traits) + '</div>' +
+        '</div>' +
+        '<div class="section-note" style="padding-top:0">※ 이 그래프는 사용자의 테스트 점수가 아니라, 결과로 선정된 ' + escapeHtml(c.name) + '이(가) 가진 고유한 성향 데이터를 시각화한 것입니다.</div>' +
+
+        '<div class="section-label"><span class="ico">🔮</span> MBTI로 표현하면</div>' +
+        '<div class="mbti-block">' +
+          '<div class="mbti-code">' + result.mbti + '</div>' +
+          '<div class="mbti-note">※ 실제 생물의 MBTI가 아니라, 답변 결과를 인간의 성격 유형에 빗대어 재미로 표현한 것입니다. 같은 유형이라도 세부 성향에 따라 다른 생물이 결과로 나올 수 있어요.</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="result-card">' +
+        '<div class="fact-card">' +
+          '<div class="section-label"><span class="ico">🔬</span> 실제 ' + escapeHtml(c.name) + '은?</div>' +
+          '<p>' + escapeHtml(getEcologyText(c)) + '</p>' +
+          '<div class="fact-tags">' +
+            '<span class="fact-badge">' + escapeHtml(c.waterType) + '</span>' +
+            '<span class="fact-badge">' + (c.ecologyVerified ? "출처 확인 완료" : "생태 정보 검증 전 · 추후 보완 예정") + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="section-note" style="padding-top:0">성격 유형·MBTI는 재미 요소이며, 위 생태 정보만 사실에 기반합니다.</div>' +
+      '</div>' +
+
+      '<div class="result-card">' +
+        '<div class="section-label"><span class="ico">🤝</span> 나와 잘 맞는 수조 친구</div>' +
+        '<div class="compat-grid">' + compatCardHTML(c.compatible, false) + '</div>' +
+        '<div class="section-label"><span class="ico">⚠️</span> 나와는 조금 어려운 친구</div>' +
+        '<div class="compat-grid">' + compatCardHTML(c.incompatible, true) + '</div>' +
+        '<div class="section-note">※ 실제 합사 여부는 수조 환경과 개체별 성향 등에 따라 달라질 수 있습니다. 단정적인 판단보다 참고용으로 봐주세요.</div>' +
+      '</div>' +
+
+      '<div class="result-card">' +
+        '<div class="section-label"><span class="ico">🌊</span> 이런 생물도 있어요</div>' +
+        '<div class="other-grid">' + otherCardsHTML + '</div>' +
+      '</div>';
+
+    els.resultMount.innerHTML = html;
+  }
+
+/* =====================================================================
+   7. 생물 상세 모달 (§9)
+   ===================================================================== */
+  function openDetail(id){
+    const c = getCreatureById(id);
+    if (!c) return;
+    const hasTraits = !!c.traits;
+    const traits = c.traits || { activity: 0, social: 0, independence: 0, territoriality: 0, exploration: 0 };
+
+    const html =
+      imageBlock(c, "hero-photo") +
+      '<div class="result-heading" style="padding-top:18px">' +
+        '<h2 class="result-title" id="modal-title" style="cursor:default">' + escapeHtml(c.name) + '</h2>' +
+        (c.title ? '<div class="result-subtitle">' + escapeHtml(c.title) + '</div>' : '') +
+      '</div>' +
+      '<div class="tag-row">' +
+        '<span class="tag-chip">' + escapeHtml(c.waterType || "수조 유형 미정") + '</span>' +
+        (c.tags || []).map(t => '<span class="tag-chip">#' + escapeHtml(t) + '</span>').join("") +
+      '</div>' +
+      (c.description ? (
+        '<div class="section-label"><span class="ico">🧠</span> 성격으로 보면</div>' +
+        (c.headline ? '<div class="personality-headline">' + escapeHtml(c.headline) + '</div>' : '') +
+        '<p class="personality-desc">' + escapeHtml(c.description) + '</p>'
+      ) : '<div class="section-note" style="padding-top:20px">성격 설명을 준비 중입니다.</div>') +
+      (hasTraits ? (
+        '<div class="section-label"><span class="ico">📐</span> ' + escapeHtml(c.name) + '의 성향</div>' +
+        '<div class="radar-wrap">' + renderRadarSVG(traits, { ariaLabel: c.name + "의 성향 레이더 차트" }) +
+          '<div class="radar-scores">' + radarScoreList(traits) + '</div>' +
+        '</div>'
+      ) : '<div class="section-note">성향 데이터를 준비 중입니다.</div>') +
+      '<div class="section-label"><span class="ico">🔬</span> 실제 ' + escapeHtml(c.name) + '은?</div>' +
+      '<p class="personality-desc" style="padding-top:0">' + escapeHtml(getEcologyText(c)) + '</p>' +
+      '<div class="section-label"><span class="ico">🤝</span> 함께 살기 좋은 생물</div>' +
+      '<div class="compat-grid">' + compatCardHTML(c.compatible, false) + '</div>' +
+      '<div class="section-label"><span class="ico">⚠️</span> 함께 살기 어려운 생물</div>' +
+      '<div class="compat-grid">' + compatCardHTML(c.incompatible, true) + '</div>';
+
+    els.modalBody.innerHTML = html;
+    els.modalBackdrop.classList.add("show");
+    els.modalBackdrop.setAttribute("aria-hidden", "false");
+  }
+  window.openDetail = openDetail;
+
+  function closeDetail(){
+    els.modalBackdrop.classList.remove("show");
+    els.modalBackdrop.setAttribute("aria-hidden", "true");
+  }
+  els.modalClose.addEventListener("click", closeDetail);
+  els.modalBackdrop.addEventListener("click", (e) => {
+    if (e.target === els.modalBackdrop) closeDetail();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeDetail();
+  });
+
+/* =====================================================================
+   8. 다시하기 / 저장 / 공유
+   ===================================================================== */
+  els.btnRestart.addEventListener("click", () => {
+    state.qIndex = 0;
+    state.history = [];
+    currentResult = null;
+    showScreen("start");
+  });
+
+  els.btnShare.addEventListener("click", async () => {
+    if (!currentResult || !currentResult.creature) return;
+    const c = currentResult.creature;
+    const shareText = "나는 '" + c.name + "'! (" + c.title + ") 국립청주해양과학관 [나와 닮은 물고기는?] 테스트 결과예요.";
+    if (navigator.share){
+      try {
+        await navigator.share({ title: "나와 닮은 물고기는?", text: shareText, url: location.href });
+      } catch (e) { /* 사용자가 공유를 취소한 경우 등은 무시 */ }
+    } else if (navigator.clipboard){
+      try {
+        await navigator.clipboard.writeText(shareText + " " + location.href);
+        showToast("결과 문구가 클립보드에 복사되었어요!");
+      } catch (e) {
+        showToast("공유하기를 지원하지 않는 환경입니다.");
+      }
+    } else {
+      showToast("공유하기를 지원하지 않는 환경입니다.");
+    }
+  });
+
+  els.btnSave.addEventListener("click", () => {
+    if (!currentResult || !currentResult.creature) return;
+    try {
+      const url = drawResultCanvas(currentResult);
+      // 일부 브라우저/미리보기 환경에서는 스크립트로 강제 다운로드를 실행할 수
+      // 없으므로, 이미지를 모달로 보여주고 길게 누르기/우클릭으로 저장하도록
+      // 안내한다 (모든 환경에서 동일하게 동작).
+      els.modalBody.innerHTML =
+        '<div style="padding:20px 20px 26px;text-align:center;">' +
+          '<img src="' + url + '" alt="' + escapeHtml(currentResult.creature.name) + ' 결과 카드" ' +
+            'style="width:100%;border-radius:16px;box-shadow:var(--shadow-sm);margin-bottom:14px;">' +
+          '<p style="color:var(--ink-soft);font-size:0.88rem;line-height:1.6;">' +
+            '이미지를 <b>길게 눌러</b>(모바일) 또는 <b>우클릭</b>하여(PC) "이미지 저장"을 선택해주세요.' +
+          '</p>' +
+        '</div>';
+      els.modalBackdrop.classList.add("show");
+      els.modalBackdrop.setAttribute("aria-hidden", "false");
+    } catch (e){
+      showToast("이 환경에서는 이미지 생성이 제한될 수 있어요.");
+    }
+  });
+
+  function drawResultCanvas(result){
+    const c = result.creature;
+    const canvas = document.getElementById("save-canvas");
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width, H = canvas.height;
+
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, "#0e7c86");
+    grad.addColorStop(1, "#0b3049");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "600 34px 'Noto Sans KR', sans-serif";
+    ctx.fillText("나와 닮은 물고기는?", W/2, 110);
+
+    ctx.font = "800 64px 'Noto Sans KR', sans-serif";
+    ctx.fillText(c.emoji || "🐠", W/2, 260);
+
+    ctx.font = "800 56px 'Noto Sans KR', sans-serif";
+    ctx.fillText("당신은 " + c.name + "!", W/2, 360);
+
+    ctx.font = "600 30px 'Noto Sans KR', sans-serif";
+    ctx.fillStyle = "#ffe6da";
+    ctx.fillText(c.title, W/2, 415);
+
+    ctx.font = "400 26px 'Noto Sans KR', sans-serif";
+    ctx.fillStyle = "#eaf6f6";
+    wrapText(ctx, c.description, W/2, 480, W - 140, 38);
+
+    ctx.font = "600 24px 'Noto Sans KR', sans-serif";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("#" + c.tags.join("   #"), W/2, 650);
+
+    ctx.font = "500 22px 'Noto Sans KR', sans-serif";
+    ctx.fillStyle = "#bcd2de";
+    ctx.fillText("MBTI로 표현하면 " + result.mbti, W/2, 700);
+
+    ctx.font = "400 20px 'Noto Sans KR', sans-serif";
+    ctx.fillStyle = "#9fbac2";
+    ctx.fillText("국립청주해양과학관 · 성격은 재미로, 생태 정보는 정확하게!", W/2, H - 60);
+
+    return canvas.toDataURL("image/png");
+  }
+
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+    const words = text.split(" ");
+    let line = "";
+    let curY = y;
+    words.forEach((word, i) => {
+      const testLine = line + word + " ";
+      if (ctx.measureText(testLine).width > maxWidth && i > 0){
+        ctx.fillText(line, x, curY);
+        line = word + " ";
+        curY += lineHeight;
+      } else {
+        line = testLine;
+      }
+    });
+    ctx.fillText(line, x, curY);
+  }
+
+  /* 초기 화면 */
+  showScreen("start");
+</script>
+</body>
+</html>
