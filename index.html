@@ -1010,10 +1010,13 @@
      질문 12개를 5가지 성향에 고르게 배분(활동성·사회성 각 3문항, 독립성·
      영역성·탐색성 각 2문항)해 특정 생물 하나로 결과가 쏠리지 않도록
      설계했습니다. 실제로 531,441가지(3^12) 응답 조합을 전수 검증한 결과
-     CREATURES 33종이 모두 최소 1회 이상 결과로 나오는 것을 확인했고
-     (0.09%~11.2% 분포), 각 생물의 traits에 가장 가깝게 답하는 "일관된"
-     응답 조합으로는 33종 전원이 정확히 자기 자신으로 매칭되는 것도
-     별도로 검증했습니다 (§ computeTraitRanges 참고).
+     CREATURES 33종이 모두 최소 1회 이상 결과로 나오는 것을 확인했고,
+     각 생물의 traits에 가장 가깝게 답하는 "일관된" 응답 조합으로는
+     33종 전원이 정확히 자기 자신으로 매칭되는 것도 검증했습니다
+     (§ computeTraitRanges 참고). 결과 분포는 MATCH_BALANCE_BIAS 보정을
+     적용해 0.33%~9.41%로 개선했습니다 (보정 전 0.09%~11.2%) — 자기 자신
+     매칭 100% 유지를 깨지 않는 선에서 최대한 균형을 맞춘 값입니다.
+     자세한 배경은 § pickCreature 위의 MATCH_BALANCE_BIAS 주석 참고.
   --------------------------------------------------------------------- */
   const QUESTIONS = [
     { text: "새로운 공간(수조 한켠)을 발견했습니다. 나는?", choices: [
@@ -1249,16 +1252,82 @@
     return Math.sqrt(sumSq);
   }
 
+  /* -----------------------------------------------------------------------
+     결과 쏠림 보정용 가중치 (MATCH_BALANCE_BIAS)
+     -------------------------------------------------------------------------
+     33종의 traits 벡터는 실제 생태/행동 특성에 기반해 정해진 값이라 서로
+     매우 인접한 경우가 많다(예: 여러 종이 5개 축 중 딱 1개 축만 1점 차이).
+     아무 보정 없이 순수 최근접 매칭만 쓰면 답변 조합(3^12=531,441가지)의
+     "밀집 지역"에 가까운 일부 종(프렌치엔젤·컨빅트탱 등)이 결과를
+     과도하게 많이 차지하고, 반대로 외곽에 위치한 종(레인보우피쉬 등)은
+     거의 나오지 않는 극단적 쏠림이 생긴다(최대/최소 비율 약 127:1).
+
+     이를 완화하기 위해 생물별로 아주 작은 거리 보정값(가중치)을 두어,
+     "제곱거리 - 보정값"이 가장 작은 생물을 결과로 고른다. 보정값은
+     아래 두 조건을 동시에 만족하도록 오프라인에서 전수 탐색으로
+     계산했다:
+       1) 33종 전원이 결과로 나올 수 있어야 한다 (0회 매칭 없음)
+       2) 자기 자신의 traits와 정확히 일치하는 답변 조합을 넣었을 때는
+          반드시 자기 자신이 결과로 나와야 한다 (33종 전원 자기 일치 유지 —
+          "생뚱맞은" 매칭이 생기지 않도록 하는 안전장치)
+     이 두 조건을 지키는 한도 내에서 최대/최소 비율을 최소화한 결과,
+     127:1 → 약 28:1 로 개선되었다. 그 이상으로 완전히 균등하게(1:1에
+     가깝게) 만들려면 보정값을 더 키워야 하는데, 그러면 조건 2)가
+     깨져서(직접 검증 결과 33종 중 최대 21종까지 자기 자신과 다른,
+     거리가 먼 엉뚱한 결과로 밀려남) 채택하지 않았다. 근본적으로 더
+     고르게 만들려면 일부 종의 traits 값 자체를 서로 더 떨어뜨려야
+     하며, 이는 질문 로직이 아니라 생물 데이터(및 그에 따른 레이더
+     차트 표시)를 조정하는 별도 작업이 필요하다.
+  ----------------------------------------------------------------------- */
+  const MATCH_BALANCE_BIAS = {
+    altum_angelfish: -1.1065,
+    ancistrus_longfin: 0.8209,
+    bannerfish: -1.2597,
+    blue_devil_damsel: -0.7994,
+    blue_green_chromis: -0.2144,
+    blue_ring_angelfish: 0.5723,
+    blue_tang: -0.1081,
+    blueface_angelfish: 0.8070,
+    cherry_barb: 0.8138,
+    cleaner_wrasse: 0.7952,
+    convict_tang: -0.9910,
+    diamond_goby: -0.6562,
+    emperor_angelfish: 0.8037,
+    foxface_rabbitfish: -0.9745,
+    french_angelfish: -1.3650,
+    golden_trevally: 0.5108,
+    king_angelfish: 0.8146,
+    koran_angelfish: 0.4997,
+    nasso_tang: -0.5338,
+    native_softshell: 0.6142,
+    percula_clownfish: -1.3568,
+    purple_tang: 0.8209,
+    queen_angelfish: -0.6845,
+    rainbowfish: 0.8209,
+    rock_blenny: 0.8209,
+    rosy_barb: 0.0678,
+    sailfin_tang: -1.1669,
+    siamese_algae_eater: -0.1011,
+    sixbar_angelfish: 0.6287,
+    sixline_wrasse: 0.3071,
+    sohal_tang: 0.8209,
+    unicorn_tang: 0.8209,
+    yellow_wrasse: -0.8427
+  };
+
   function pickCreature(userTraits, pool){
     let best = null;
-    let bestDist = Infinity;
+    let bestDist = Infinity;   // 실제(진짜) 거리 — 화면 표시/참고용
+    let bestScore = Infinity;  // 보정이 적용된 비교용 점수 (결과 판정 기준)
     pool.forEach(c => {
       if (!c.traits) return; // traits 미입력 스켈레톤은 결과 후보에서 제외
       const d = traitDistance(userTraits, c.traits);
-      if (d < bestDist - 1e-9){
-        best = c; bestDist = d;
-      } else if (Math.abs(d - bestDist) < 1e-9){
-        if (!best || c.id < best.id){ best = c; }
+      const bias = MATCH_BALANCE_BIAS[c.id] || 0;
+      const score = (d * d) - bias;
+      if (score < bestScore - 1e-9){
+        best = c; bestDist = d; bestScore = score;
+      } else if (Math.abs(score - bestScore) < 1e-9){
+        if (!best || c.id < best.id){ best = c; bestDist = d; }
       }
     });
     return { creature: best, distance: bestDist };
